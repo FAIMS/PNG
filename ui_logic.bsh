@@ -1,0 +1,437 @@
+/*** 'Editable' - you can edit the code below based on the needs ***/
+import java.util.concurrent.Callable;
+
+User user; // don't touch
+String userid;
+String username;
+
+makeLocalID(){
+    fetchOne("CREATE TABLE IF NOT EXISTS localSettings (key text primary key, value text);");
+    fetchOne("drop view latestNonDeletedArchEntFormattedIdentifiers;");
+    fetchOne("CREATE VIEW latestNonDeletedArchEntFormattedIdentifiers as " +
+              "SELECT uuid, aenttypeid, aenttypename, group_concat(response, '') as response, null as deleted " +
+              "FROM ( " +
+                "SELECT uuid, aenttypeid, aenttypename, group_concat(format(formatstring, vocabname, measure, freetext, certainty), appendcharacterstring) as response, null as deleted, aentcountorder " +
+                "FROM ( " +
+                  "SELECT uuid, aenttypeid, aenttypename, formatstring, vocabname, measure, freetext, certainty, appendcharacterstring, null as deleted, aentcountorder, vocabcountorder, attributeid " +
+                  "FROM latestNonDeletedArchent " +
+                    "JOIN aenttype using (aenttypeid) " +
+                    "JOIN (SELECT * FROM idealaent where isIdentifier='true') using (aenttypeid) " +
+                    "join attributekey  using (attributeid) " +
+                    "left outer join latestNonDeletedAentValue using (uuid, attributeid) " +
+                    "left outer join vocabulary using (attributeid, vocabid) " +
+                  "order by uuid, aentcountorder, vocabcountorder " +
+                ") " +
+                "group by uuid, attributeid " +
+                "having response is not null " +
+                "order by uuid, aentcountorder) " +
+              "group by uuid " +
+              "order by uuid;"
+    );
+}
+makeLocalID();
+
+
+
+
+
+/*** Uneditable - you can edit the code below with extreme precaution ***/
+/*** USER ***/
+
+populateUsers() {
+	userid = null;
+    fetchAll("SELECT userid, fname || ' ' || lname FROM user WHERE userdeleted IS null;", new FetchCallback() {
+        onFetch(result) {
+            populateList("Users/Login/Author_List", result);
+        }
+    });
+}
+
+populateUserDetailsAndShowProject() {
+	userid = getListItemValue();
+    fetchOne("SELECT userid,fname,lname,email FROM user where userid='" + userid + "';", new FetchCallback() {
+        onFetch(result) {
+            user = new User(result.get(0),result.get(1),result.get(2),result.get(3));
+            setUser(user); 
+            username = result.get(1) + " " + result.get(2);
+            showTabGroup("Project");
+        }
+    });
+}
+
+populateControlTabGroup() {
+	if (userid == null) userid = getListItemValue(); // userid will only be null on first login (and subsequent accesses of the login tabgroup)
+
+    q  = "";
+    q += "SELECT  UUID, Measure ";
+    q += "FROM    AentValue ";
+    q += "WHERE   AttributeID IS NOT NULL ";
+    q += "AND     Deleted IS NULL ";
+    q += "AND     AttributeID IN ( ";
+    q += "    SELECT  AttributeID ";
+    q += "    FROM    AttributeKey ";
+    q += "    WHERE   AttributeName='recordId');";
+    fetchAll(q, new FetchCallback() {
+    onFetch(result) {
+    	print("load result:  " + result);
+      	populateList("control/control/savedRecords", result);
+    }   
+  });
+}
+
+/** Action Bar **/
+
+addActionBarItem("sync", new ToggleActionButtonCallback() {
+    actionOnLabel() {
+        "{Sync_Enabled}";
+    }
+    actionOn() {
+        setSyncEnabled(false);
+        setFileSyncEnabled(false);
+        showToast("{Sync_Disabled}");
+    }
+    isActionOff() {
+        isSyncEnabled();
+    }
+    actionOffLabel() {
+        "{Sync_Disabled}";
+    }
+    actionOff() {
+        setSyncEnabled(true);
+        setFileSyncEnabled(true);
+        showToast("{Sync_Enabled}");
+    }
+});
+
+addActionBarItem("internal_gps", new ToggleActionButtonCallback() {
+    actionOnLabel() {
+        "{Internal_GPS_Enabled}";
+    }
+    actionOn() {
+        stopGPS();
+        showToast("{GPS_Disabled}");
+    }
+    isActionOff() {
+        isInternalGPSOn();
+    }
+    actionOffLabel() {
+        "{Internal_GPS_Disabled}";
+    }
+    actionOff() {
+        if(isExternalGPSOn()) {
+            stopGPS();
+        }
+        startInternalGPS();
+        showToast("{GPS_Enabled}");
+    }
+});
+
+addActionBarItem("external_gps", new ToggleActionButtonCallback() {
+    actionOnLabel() {
+        "{External_GPS_Enabled}";
+    }
+    actionOn() {
+        stopGPS();
+        showToast("{GPS_Disabled}");
+    }
+    isActionOff() {
+        isExternalGPSOn();
+    }
+    actionOffLabel() {
+        "{External_GPS_Disabled}";
+    }
+    actionOff() {
+        if(isInternalGPSOn()) {
+            stopGPS();
+        }
+        startExternalGPS();
+        if(isBluetoothConnected()) {
+            showToast("{GPS_Enabled}");
+        } else {
+            showToast("{Please_Enable_Bluetooth}");
+            this.isActionOff();
+        }
+    }
+});
+
+
+
+entity_id = null;
+saveEntity() {
+	enable_autosave = true;
+	saveTabGroup("bettong", entity_id, null, null, new SaveCallback() {
+    onSave(uuid, newRecord) {
+	    	entity_id = uuid;
+	    	if(newRecord) {
+	    		showToast("{New_Record_Created}");
+	    	}
+	    }
+	},
+	enable_autosave);
+}
+
+createEntityAndPopulateBettong() {
+	entity_id = null;
+    newTabGroup("bettong");
+    setFieldValue("bettong/physicalCharacteristics/scribe", username);
+
+    q  = "";
+    q += "SELECT  COALESCE(MAX(Cast(Measure as decimal)), 0) + 1 ";
+    q += "FROM    AentValue ";
+    q += "WHERE   AttributeID IS NOT NULL ";
+    q += "AND     Deleted IS NULL ";
+    q += "AND     AttributeID IN ( ";
+    q += "    SELECT  AttributeID ";
+    q += "    FROM    AttributeKey ";
+    q += "    WHERE   AttributeName='recordId');";
+
+    fetchOne(q, new FetchCallback() {
+        onFetch(result) {
+			setFieldValue("bettong/physicalCharacteristics/recordId", result.get(0));
+			saveEntity();
+        }
+    });
+}
+
+loadEntityAndPopulateBettong() {
+  entity_id = getListItemValue();
+  showTabGroup("bettong", entity_id);
+}
+
+getGpsCoordinates() {
+    location = getGPSPosition();
+    if (!isExternalGPSOn() && !isInternalGPSOn()) {
+    	showWarning("{Err_Loc}", "{Err_Con}");
+    	return;
+    }
+    if (location == null){
+    	showWarning("{Err_Loc}", "{Err_Sig}");
+    	return;
+    }
+
+	lat = location.getLatitude();
+	lon = location.getLongitude();
+	tabgroup = "bettong/approachAndRemoval/";
+	setFieldValue(tabgroup + "latitude",  lat);
+	setFieldValue(tabgroup + "longitude", lon);
+}
+
+fillInGPS() {
+    if (isNull(currentSampleUUID)) {
+        return;
+    }
+    String tabgroup = getSampleTypePath();
+    String query = "select x(transform(geospatialcolumn, 4326)) as longtiude, y(transform(geospatialcolumn, 4326)) as latitude, x(transform(geospatialcolumn, CAST (vocabname AS INTEGER))) as easting, y(transform(geospatialcolumn, CAST (vocabname AS INTEGER))) as northing " +
+        "from latestnondeletedarchent, vocabulary " +
+        "where uuid = " + currentSampleUUID + " " +
+        "and vocabid = " + getFieldValue(tabgroup + "/Basic_Info/SRID") + ";";
+    fetchOne(query, new FetchCallback() {
+        onFetch(result) {
+            print("[fillInGPS()] Fetched DB transformed geometry: " + result);
+            setFieldValue(tabgroup + "/Basic_Info/Latitude", result.get(0));
+            setFieldValue(tabgroup + "/Basic_Info/Longitude", result.get(1));
+            setFieldValue(tabgroup + "/Basic_Info/Northing", result.get(2));
+            setFieldValue(tabgroup + "/Basic_Info/Easting", result.get(3));
+        }
+    });
+}
+
+takePoint() {
+    Object position = getGPSPosition();
+    if (position == null) {
+        showToast("{GPS_Not_Initialised}");
+        return;
+    }
+    Object projPosition = getGPSPositionProjected();
+    Double latitude = position.getLatitude();
+    Double longitude = position.getLongitude();
+    Double northing = projPosition.getLatitude();
+    Double easting = projPosition.getLongitude();
+
+    samplePoint = new Point(new MapPos(easting, northing), null, (PointStyle) null, null);
+    ArrayList geolist = new ArrayList();
+    geolist.add(samplePoint);
+    saveArchEnt(currentSampleUUID, getSampleType(), geolist, null, new SaveCallback() {
+        onSave(uuid, newRecord) {
+            print("[takePoint()] Added geometry: " + geolist);
+            fillInGPS();
+        }  
+    });    
+}
+
+String getSampleTypePath() {
+    String tabgroup = null;
+    String type = getSampleType();
+    if(type.equals("Water Sample")) {
+        tabgroup = "Water_Sample";
+    } else if(type.equals("Plant Sample")) {
+        tabgroup = "Plant_Sample";
+    } else if(type.equals("Soil Sample")) {
+        tabgroup = "Soil_Sample";
+    } else if(type.equals("Rock Sample")) {
+        tabgroup = "Rock_Sample";
+    }
+    print("[getSampleTypePath()] Tabgroup is: " + tabgroup);
+    return tabgroup;
+}
+
+/* Creates sidebar navigation for the sample. */
+addSampleNavigation() {
+    // tabgroup = getSampleTypePath();
+    removeNavigationButton("new");
+    removeNavigationButton("duplicate");
+    removeNavigationButton("delete");
+
+    addNavigationButton("new", new ActionButtonCallback() {
+        actionOnLabel() {
+            "{New_Site}";
+        }
+        actionOn() {
+            // print("[Sidebar New Sample] Attempting to make a new sample");
+            // if(!isNull(currentSampleUUID)) {
+            //     newSample();
+            //     autoSaveSample();
+
+            // } else {
+            //     String newSampleLogic = "newSample();" + "autoSaveSample();";
+            //     showAlert("{Warning}", "{Lose_Unsaved_Changes}!", newSampleLogic, "");
+            // }
+        }
+    }, "success");
+
+    addNavigationButton("duplicate", new ActionButtonCallback() {
+        actionOnLabel() {
+            "{Duplicate_Site}";
+        }
+        actionOn() {
+            // if(!isNull(currentSampleUUID)) {
+            //     // duplicateSample();
+            //     dupeSample3();
+            // } else {
+            //     showWarning("{Warning}", "{Sample_Not_Duplicated}");
+            // }
+        }
+    }, "primary");
+
+    addNavigationButton("delete", new ActionButtonCallback() {
+        actionOnLabel() {
+            "{Delete_Site}";
+        }
+        actionOn() {
+            // deleteSample();
+        }
+    }, "danger");    
+
+}
+
+/* Removes sidebar buttons. */
+removeNavigationButtons() {
+    removeNavigationButton("new");
+    removeNavigationButton("duplicate");
+    removeNavigationButton("delete");
+}
+
+/* Generates a confirmation prompt for deleting the current sample. */
+deleteSample() {
+    tabgroup = getSampleTypePath();
+    print("[deleteSample()] Prompting a sample deletion, currentSampleUUID = " + currentSampleUUID);
+    if (!isNull(currentSampleUUID)) {
+        print("[deleteSample()] Confirming a sample deletion");
+        showAlert("{Confirm_Deletion}", "{Press_To_Delete} {" + tabgroup + "}!", "reallyDeleteSample()", "doNotDelete()");
+    } else {
+        cancelTabGroup(tabgroup, true);
+        print("[deleteSample()] Cancelling a sample deletion.");
+    }
+}
+
+/* Deletes the current water sample. */
+reallyDeleteSample() {
+    print("[reallyDeleteSample()] Really deleting the sample.");
+    tabgroup = getSampleTypePath();
+    deleteArchEnt(currentSampleUUID, new DeleteCallback() {
+        onDelete(uuid) {
+            cancelTabGroup(tabgroup, false);
+        }
+    });
+}
+
+updateGPSStatus() {
+    String status = "";
+    String previousStatus = getFieldValue("Project/Main/GPS_Diagnostics");
+    String notInitialised = "GPS is not initialised";
+
+    // Check if GPS is initialised or was previously initialised.
+    if (!isExternalGPSOn() && !isInternalGPSOn()) {
+        if (!isNull(previousStatus) && !previousStatus.equals(notInitialised)) {
+            // previous gps status is some last valid coordinate.
+            String error = "GPS is no longer initailised. Previous status:";
+            // check that error message wasn't previously appended to the previous status message.
+            if (previousStatus.subSequence(0, error.length()).equals(error)) {
+                status = previousStatus;
+            } else {
+                print("[updateGPSStatus] Previous status subSequence: " + previousStatus.subSequence(0, error.length()-1));
+                status = error + "\n" + previousStatus;
+            }
+        } else {
+            status = notInitialised;
+        }
+    } else {
+        status += "Internal GPS: ";
+        if (isInternalGPSOn()) {status += "on";} else {status += "off";}
+        status += "\nExternal GPS: ";
+        if (isExternalGPSOn()) {if (isBluetoothConnected()) {status += "on and bluetooth connected";} else {status += "on and bluetooth disconnected";}} else {status += "off";}
+        Object position = getGPSPosition();
+        if (position != null) {
+            Object projPosition = getGPSPositionProjected();
+            status += "\nLatitude: " + position.getLatitude();
+            status += "   Longitude: " + position.getLongitude();
+            status += "\nNorthing: " + projPosition.getLatitude();
+            status += "   Easting: " + projPosition.getLongitude();
+            status += "\nAccuracy: " + getGPSEstimatedAccuracy();
+            // status += "\n Heading: " + getGPSHeading();
+        } else {
+            status += "\nPosition: no GPS position could be found";
+        }
+    }
+    print("[updateGPSStatus()] GPS status: " + status);
+    setFieldValue("Project/Main/GPS_Diagnostics", status);
+}
+
+entity_id = null;
+saveEntity() {
+    enable_autosave = true;
+    saveTabGroup("bettong", entity_id, null, null, new SaveCallback() {
+    onSave(uuid, newRecord) {
+            entity_id = uuid;
+            if(newRecord) {
+                showToast("{New_Record_Created}");
+            }
+        }
+    },
+    enable_autosave);
+}
+
+populateSiteCode() {
+    userid = null;
+    fetchAll("SELECT userid, fname || ' ' || lname FROM user WHERE userdeleted IS null;", new FetchCallback() {
+        onFetch(result) {
+            populateList("user/usertab/users", result);
+        }
+    });
+}
+
+
+startInternalGPS();
+setSyncEnabled(true);
+// onEvent("bettong/approachAndRemoval/takeFromGps", "click", "getGpsCoordinates()");
+// onEvent("control/control/", "show", "populateControlTabGroup()");
+// onEvent("control/control/buttonNewRecord",  "click", "createEntityAndPopulateBettong()");
+// onEvent("control/control/savedRecords", "click", "loadEntityAndPopulateBettong()");
+onEvent("Users/Login", "show", "populateUsers()");
+onEvent("Users/Login/Author_List", "click", "populateUserDetailsAndShowProject()");
+onEvent("Project/Main/Record_Site", "click", "showTabGroup(\"Site\")");
+
+onEvent("Site/Site_Recording/Take_GPS", "click", "takePoint()");
+onEvent("Site/Photolog/Record_External_Photo", "click", "showTabGroup(\"Photolog\")");
+
+onEvent("Project/Main", "show", "updateGPSStatus(); addSampleNavigation();");

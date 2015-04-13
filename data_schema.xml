@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSchema>
+  <ArchaeologicalElement name="PNG_Site" type="freetext">
+    <description></description>
+    <property name="Site_Number" type="freetext" isIdentifier="true">
+      <description/>
+    </property>
+    <property name="Created_At" type="freetext">
+      <description/>
+    </property>
+    <property name="Author" type="freetext">
+      <description/>
+    </property>
+    <property name="Team" type="freetext">
+      <description/>
+    </property>
+    <property name="Local_Site_Name" type="freetext">
+      <description/>
+    </property>
+    <property name="Site_Type" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+    <property name="Site_Significance" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+    <property name="Land_Owners" type="freetext">
+      <description/>
+    </property>
+    <property name="Informant_Details" type="freetext">
+      <description/>
+    </property>
+    <property name="Latitude" type="freetext">
+      <description/>
+    </property>
+    <property name="Longitude" type="freetext">
+      <description/>
+    </property>
+    <property name="Northing" type="freetext">
+      <description/>
+    </property>
+    <property name="Easting" type="freetext">
+      <description/>
+    </property>
+    <property name="Accuracy" type="freetext">
+      <description/>
+    </property>
+    <property name="Heading" type="freetext">
+      <description/>
+    </property>
+    <property name="Elevation_Absolute" type="freetext">
+      <description/>
+    </property>
+    <property name="Elevation_Range" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+    <property name="Landscape" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+    <property name="Vegetation" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+    <property name="Ground_Visibility" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+    <property name="Current_Land_Use" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+    <property name="Sampling_Method" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+    <property name="Estimated_Dimensions" type="freetext">
+      <description/>
+    </property>
+    <property name="Cultural_Material_Present" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+    <property name="Surface_Geomorphology" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+    <property name="Subsurface_Geomorphology" type="freetext">
+      <description/>
+    </property>
+    <property name="Disturbance" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+    <property name="Site_Description" type="freetext">
+      <description/>
+    </property>
+    <property name="General_Notes" type="freetext">
+      <description/>
+    </property>
+    <property name="Recommendation" type="freetext">
+      <description/>
+    </property>
+    <property name="Sketches" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+    <property name="Measurement_Type" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+    <property name="Measurement" type="freetext">
+      <description/>
+    </property>
+    <property name="Measurement_1" type="freetext">
+      <description/>
+    </property>
+    <property name="List_Of_External_Photos" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+    <property name="Photo_ID" type="freetext">
+      <description/>
+    </property>
+    <property name="Photo_Timestamp" type="freetext">
+      <description/>
+    </property>
+    <property name="Photo_Note" type="freetext">
+      <description/>
+    </property>
+  </ArchaeologicalElement>
+  <ArchaeologicalElement name="PNG_Project" type="enum">
+    <description></description>
+    <property name="Team_Members" type="freetext">
+      <description/>
+    </property>
+    <property name="Author" type="freetext">
+      <description/>
+    </property>
+    <property name="Site_Code" type="freetext">
+      <description/>
+    </property>
+    <property name="Site_Number" type="measure">
+      <description/>
+    </property>
+    <property name="Records" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+    <property name="All_Site_Records" type="enum">
+      <description/>
+      <lookup>
+      </lookup>
+    </property>
+  </ArchaeologicalElement>
+</dataSchema>
