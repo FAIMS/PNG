@@ -1,6 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSchema>
-  <ArchaeologicalElement name="PNG_Site" type="freetext">
+  <ArchaeologicalElement name="Project" type="enum">
+    <description></description>
+    <property name="Team_Members" type="freetext">
+      <description/>
+    </property>
+    <property name="Author" type="freetext">
+      <description/>
+    </property>
+    <property name="Site_Code" type="freetext">
+      <description/>
+    </property>
+    <property name="Site_Number" type="measure">
+      <description/>
+    </property>
+    <property name="Records" type="enum">
+      <description/>
+      <lookup>
+        <term> {Records}
+          <description/>
+        </term>
+      </lookup>
+    </property>
+    <property name="All_Site_Records" type="enum">
+      <description/>
+      <lookup>
+        <term> {All_Site_Records}
+          <description/>
+        </term>
+      </lookup>
+    </property>
+  </ArchaeologicalElement>
+  <ArchaeologicalElement name="Site" type="freetext">
     <description></description>
     <property name="Site_Number" type="freetext" isIdentifier="true">
       <description/>
@@ -20,11 +51,38 @@
     <property name="Site_Type" type="enum">
       <description/>
       <lookup>
+        <term> {Ethnographic}
+          <description/>
+        </term>
+        <term> {Surface_Scatter}
+          <description/>
+        </term>
+        <term> {Rockshelter}
+          <description/>
+        </term>
+        <term> {Isolated_Feature_Artefact}
+          <description/>
+        </term>
+        <term> {Other}
+          <description/>
+        </term>
       </lookup>
     </property>
     <property name="Site_Significance" type="enum">
       <description/>
       <lookup>
+        <term> {None}
+          <description/>
+        </term>
+        <term> {Low}
+          <description/>
+        </term>
+        <term> {Medium}
+          <description/>
+        </term>
+        <term> {High}
+          <description/>
+        </term>
       </lookup>
     </property>
     <property name="Land_Owners" type="freetext">
@@ -54,34 +112,113 @@
     <property name="Elevation_Absolute" type="freetext">
       <description/>
     </property>
-    <property name="Elevation_Range" type="enum">
+    <property name="Elevation_Range" type="freetext">
       <description/>
-      <lookup>
-      </lookup>
     </property>
     <property name="Landscape" type="enum">
       <description/>
       <lookup>
+        <term> {Hiltop}
+          <description/>
+        </term>
+        <term> {Ridge}
+          <description/>
+        </term>
+        <term> {Base_of_Ridge}
+          <description/>
+        </term>
+        <term> {Base_of_Hill}
+          <description/>
+        </term>
+        <term> {Cliff}
+          <description/>
+        </term>
+        <term> {Other}
+          <description/>
+        </term>
       </lookup>
     </property>
     <property name="Vegetation" type="enum">
       <description/>
       <lookup>
+        <term> {Primary_Forest}
+          <description/>
+        </term>
+        <term> {Secondary_Forest}
+          <description/>
+        </term>
+        <term> {Grassland}
+          <description/>
+        </term>
+        <term> {Garden}
+          <description/>
+        </term>
+        <term> {Scrub_Undergrowth}
+          <description/>
+        </term>
       </lookup>
     </property>
     <property name="Ground_Visibility" type="enum">
       <description/>
       <lookup>
+        <term> {0}
+          <description/>
+        </term>
+        <term> {1_25}
+          <description/>
+        </term>
+        <term> {25-50}
+          <description/>
+        </term>
+        <term> {50_75}
+          <description/>
+        </term>
+        <term> {75_100}
+          <description/>
+        </term>
       </lookup>
     </property>
     <property name="Current_Land_Use" type="enum">
       <description/>
       <lookup>
+        <term> {Garden}
+          <description/>
+        </term>
+        <term> {Path}
+          <description/>
+        </term>
+        <term> {Villiage}
+          <description/>
+        </term>
+        <term> {Plantation}
+          <description/>
+        </term>
+        <term> {forest}
+          <description/>
+        </term>
+        <term> {Other}
+          <description/>
+        </term>
       </lookup>
     </property>
     <property name="Sampling_Method" type="enum">
       <description/>
       <lookup>
+        <term> {Observational}
+          <description/>
+        </term>
+        <term> {Surface_Collection}
+          <description/>
+        </term>
+        <term> {Spade_Pit}
+          <description/>
+        </term>
+        <term> {Sample}
+          <description/>
+        </term>
+        <term> {Other}
+          <description/>
+        </term>
       </lookup>
     </property>
     <property name="Estimated_Dimensions" type="freetext">
@@ -90,11 +227,56 @@
     <property name="Cultural_Material_Present" type="enum">
       <description/>
       <lookup>
+        <term> {Pottery}
+          <description/>
+        </term>
+        <term> {Stone}
+          <description/>
+        </term>
+        <term> {Obsidian}
+          <description/>
+        </term>
+        <term> {Glass}
+          <description/>
+        </term>
+        <term> {Shell}
+          <description/>
+        </term>
+        <term> {Animal_Bone}
+          <description/>
+        </term>
+        <term> {Wood}
+          <description/>
+        </term>
+        <term> {Mumu_Stones}
+          <description/>
+        </term>
+        <term> {Etc}
+          <description/>
+        </term>
       </lookup>
     </property>
     <property name="Surface_Geomorphology" type="enum">
       <description/>
       <lookup>
+        <term> {Alluvium}
+          <description/>
+        </term>
+        <term> {Soil}
+          <description/>
+        </term>
+        <term> {Clay}
+          <description/>
+        </term>
+        <term> {Limestone}
+          <description/>
+        </term>
+        <term> {Bedrock}
+          <description/>
+        </term>
+        <term> {Other}
+          <description/>
+        </term>
       </lookup>
     </property>
     <property name="Subsurface_Geomorphology" type="freetext">
@@ -103,6 +285,18 @@
     <property name="Disturbance" type="enum">
       <description/>
       <lookup>
+        <term> {Undisturbed}
+          <description/>
+        </term>
+        <term> {Surface_Sediment_Disturbed}
+          <description/>
+        </term>
+        <term> {Totally_Disturbed}
+          <description/>
+        </term>
+        <term> {Unknown}
+          <description/>
+        </term>
       </lookup>
     </property>
     <property name="Site_Description" type="freetext">
@@ -117,57 +311,216 @@
     <property name="Sketches" type="enum">
       <description/>
       <lookup>
+        <term> {Sketches}
+          <description/>
+        </term>
       </lookup>
     </property>
+  </ArchaeologicalElement>
+  <ArchaeologicalElement name="Measurement" type="enum">
+    <description></description>
     <property name="Measurement_Type" type="enum">
       <description/>
       <lookup>
+        <term> {Isolated_artefact}
+          <description/>
+          <term> {Length}
+            <description/>
+            <term> {Length}
+              <description/>
+            </term>
+            <term> {Width}
+              <description/>
+            </term>
+          </term>
+          <term> {Width}
+            <description/>
+          </term>
+          <term> {Area}
+            <description/>
+          </term>
+        </term>
+        <term> {Isolated_feature}
+          <description/>
+          <term> {N_A}
+            <description/>
+          </term>
+        </term>
+        <term> {Rockshelter}
+          <description/>
+          <term> {Length}
+            <description/>
+          </term>
+          <term> {Width}
+            <description/>
+          </term>
+          <term> {Height}
+            <description/>
+          </term>
+        </term>
+        <term> {Cave}
+          <description/>
+          <term> {Max_Depth}
+            <description/>
+          </term>
+          <term> {Max_Width}
+            <description/>
+          </term>
+          <term> {Max_Height}
+            <description/>
+          </term>
+          <term> {Entrance_Width}
+            <description/>
+          </term>
+          <term> {Entrance_Height}
+            <description/>
+          </term>
+          <term> {Terrace_Depth}
+            <description/>
+          </term>
+          <term> {Terrace_Width}
+            <description/>
+          </term>
+          <term> {Aspect}
+            <description/>
+          </term>
+          <term> {Area_of_Floor}
+            <description/>
+          </term>
+          <term> {Area_of_Deposit}
+            <description/>
+          </term>
+        </term>
+        <term> {Artefact_scatter}
+          <description/>
+          <term> {Max_Depth}
+            <description/>
+          </term>
+          <term> {Max_Width}
+            <description/>
+          </term>
+          <term> {Max_Height}
+            <description/>
+          </term>
+          <term> {Entrance_Width}
+            <description/>
+          </term>
+          <term> {Entrance_Height}
+            <description/>
+          </term>
+          <term> {Terrace_Depth}
+            <description/>
+          </term>
+          <term> {Terrace_Width}
+            <description/>
+          </term>
+          <term> {Aspect}
+            <description/>
+          </term>
+          <term> {Area_of_Floor}
+            <description/>
+          </term>
+          <term> {Area_of_Deposit}
+            <description/>
+          </term>
+        </term>
+        <term> {Sub-surface_cultural_deposit}
+          <description/>
+          <term> {Length_of_Entire_Scatter}
+            <description/>
+          </term>
+          <term> {Width_of_Entire_Scatter}
+            <description/>
+          </term>
+          <term> {Length_of_Densest_Scatter_Area}
+            <description/>
+          </term>
+          <term> {Width_of_Densest_Scatter_Area}
+            <description/>
+          </term>
+          <term> {Estimated_Average_Density_Artefacts_per_Square_Metre}
+            <description/>
+          </term>
+        </term>
+        <term> {Midden}
+          <description/>
+          <term> {Total_Depth_of_The_Cultural_Deposit}
+            <description/>
+          </term>
+          <term> {Depth_of_Each_Layer}
+            <description/>
+          </term>
+          <term> {Estimated_Length_of_Subsurface_Deposit}
+            <description/>
+          </term>
+          <term> {Estimated_Width_of_Subsurface_Deposit}
+            <description/>
+          </term>
+        </term>
+        <term> {Stone_arrangement_megalithic_structures}
+          <description/>
+          <term> {Length_of_Midden}
+            <description/>
+          </term>
+          <term> {Width_of_Midden}
+            <description/>
+          </term>
+        </term>
+        <term> {Quarry}
+          <description/>
+          <term> {Length_and_Direction_Degrees_of_Structure}
+            <description/>
+          </term>
+          <term> {Width_and_Direction_Degrees_of_Structure}
+            <description/>
+          </term>
+        </term>
+        <term> {Rockart}
+          <description/>
+          <term> {Length}
+            <description/>
+          </term>
+          <term> {Width}
+            <description/>
+          </term>
+          <term> {Height}
+            <description/>
+          </term>
+        </term>
+        <term> {Skeletal_deposit}
+          <description/>
+          <term> {Number_of_Art_Panels}
+            <description/>
+          </term>
+          <term> {Number_of_Motifs}
+            <description/>
+          </term>
+          <term> {Length_of_Each_Panel}
+            <description/>
+          </term>
+          <term> {Width_of_Each_Panel}
+            <description/>
+          </term>
+        </term>
+        <term> {Terraces_land_modifications}
+          <description/>
+          <term> {N_A}
+            <description/>
+          </term>
+        </term>
+        <term> {Other}
+          <description/>
+          <term> {Length_and_Direction_Degrees_of_Terrace}
+            <description/>
+          </term>
+          <term> {Width_and_Direction_Degrees_of_Terrace}
+            <description/>
+          </term>
+        </term>
       </lookup>
     </property>
-    <property name="Measurement" type="freetext">
+    <property name="Measurement_Field" type="freetext">
       <description/>
-    </property>
-    <property name="Measurement_1" type="freetext">
-      <description/>
-    </property>
-    <property name="List_Of_External_Photos" type="enum">
-      <description/>
-      <lookup>
-      </lookup>
-    </property>
-    <property name="Photo_ID" type="freetext">
-      <description/>
-    </property>
-    <property name="Photo_Timestamp" type="freetext">
-      <description/>
-    </property>
-    <property name="Photo_Note" type="freetext">
-      <description/>
-    </property>
-  </ArchaeologicalElement>
-  <ArchaeologicalElement name="PNG_Project" type="enum">
-    <description></description>
-    <property name="Team_Members" type="freetext">
-      <description/>
-    </property>
-    <property name="Author" type="freetext">
-      <description/>
-    </property>
-    <property name="Site_Code" type="freetext">
-      <description/>
-    </property>
-    <property name="Site_Number" type="measure">
-      <description/>
-    </property>
-    <property name="Records" type="enum">
-      <description/>
-      <lookup>
-      </lookup>
-    </property>
-    <property name="All_Site_Records" type="enum">
-      <description/>
-      <lookup>
-      </lookup>
     </property>
   </ArchaeologicalElement>
 </dataSchema>

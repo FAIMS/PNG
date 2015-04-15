@@ -1,9 +1,9 @@
 <h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <h:head>
-    <h:title>hdb FAIMS Community Server</h:title>
+    <h:title>PNG</h:title>
     <model>
       <instance>
-        <faims id="hdb_FAIMS_Community_Server">
+        <faims id="PNG">
           <style>
             <orientation>
               <orientation/>
@@ -137,7 +137,7 @@
       </group>
     </group>
     <group ref="Project">
-      <label>{Project, arch16n: Project}</label>
+      <label>{Project}</label>
       <group ref="Main">
         <label>{Main}</label>
         <input ref="Team_Members">
@@ -186,7 +186,7 @@
       </group>
     </group>
     <group ref="Site">
-      <label>{Site, arch16n: Site}</label>
+      <label>{Site}</label>
       <group ref="Site_Recording">
         <label>{Site_Recording}</label>
         <group ref="Col_Group_2">
@@ -269,13 +269,9 @@
         <input ref="Elevation_Absolute" faims_attribute_name="Elevation_Absolute" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true">
           <label>{Elevation_Absolute}</label>
         </input>
-        <select1 ref="Elevation_Range" faims_attribute_name="Elevation_Range" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true">
+        <input ref="Elevation_Range" faims_attribute_name="Elevation_Range" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true">
           <label>{Elevation_Range}</label>
-          <item>
-            <label>placeholder</label>
-            <value>placeholder</value>
-          </item>
-        </select1>
+        </input>
         <select1 ref="Landscape" faims_attribute_name="Landscape" faims_attribute_type="vocab" faims_certainty="true" faims_annotation="true">
           <label>{Landscape}</label>
           <item>

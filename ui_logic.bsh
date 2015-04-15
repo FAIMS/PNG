@@ -420,6 +420,35 @@ populateSiteCode() {
     });
 }
 
+makeVocab(String type, String path, String attrib){
+    fetchAll("select vocabid, vocabname from vocabulary join attributekey using (attributeid) where attributename = '"+attrib+"' order by vocabcountorder",
+        new FetchCallback() {
+            onFetch(result) {
+                if(type.equals("CheckBoxGroup")) {
+                    populateCheckBoxGroup(path, result);
+                } else if(type.equals("DropDown")) {
+                    populateDropDown(path, result);
+                } else if(type.equals("RadioGroup")) {
+                    populateRadioGroup(path, result);
+                } else if(type.equals("List")) {
+                    populateList(path, result);
+                }
+            }
+        });
+}
+
+makeVocab("DropDown"      , "Site/Site_Recording/Site_Type"                 , "Site_Type");
+makeVocab("RadioGroup"    , "Site/Site_Recording/Site_Significance"         , "Site_Significance");
+makeVocab("DropDown"      , "Site/Site_Recording/Landscape"                 , "Landscape");
+makeVocab("DropDown"      , "Site/Site_Recording/Vegetation"                , "Vegetation");
+makeVocab("DropDown"      , "Site/Site_Recording/Ground_Visibility"         , "Ground_Visibility");
+makeVocab("DropDown"      , "Site/Site_Recording/Current_Land_Use"          , "Current_Land_Use");
+makeVocab("DropDown"      , "Site/Site_Recording/Sampling_Method"           , "Sampling_Method");
+makeVocab("CheckBoxGroup" , "Site/Site_Recording/Cultural_Material_Present" , "Cultural_Material_Present");
+makeVocab("DropDown"      , "Site/Site_Recording/Surface_Geomorphology"     , "Surface_Geomorphology");
+makeVocab("DropDown"      , "Site/Site_Recording/Disturbance"               , "Disturbance");
+makeVocab("CheckBoxGroup" , "Site/Site_Recording/Sketches"                  , "Sketches");
+makeVocab("DropDown"      , "Site/Measurements/Measurement_Type"            , "Measurement_Type");
 
 startInternalGPS();
 setSyncEnabled(true);
