@@ -136,10 +136,22 @@ saveEntity() {
 	enable_autosave);
 }
 
-createEntityAndPopulateBettong() {
+createSiteAndPopulateSiteRecording() {
 	entity_id = null;
-    newTabGroup("bettong");
-    setFieldValue("bettong/physicalCharacteristics/scribe", username);
+    //newTabGroup("bettong");
+    siteCode = getFieldValue("Project/Main/Site_Code");
+    siteNumber = getFieldValue("Project/Main/Site_Number");
+    setFieldValue("Site/Site_Recording/Author", username);
+    setFieldValue("Site/Site_Recording/Site_Code", siteCode);
+    setFieldValue("Site/Site_Recording/Site_Number", siteNumber);
+
+    //take autonumbering from csiro, make sure to support localsettings preservation of ID. 
+}
+
+createEntityAndPopulateMain() {
+	entity_id = null;
+    //newTabGroup("bettong");
+    setFieldValue("Project/Main/Author", username);
 
     //take autonumbering from csiro, make sure to support localsettings preservation of ID. 
 }
@@ -418,4 +430,5 @@ onEvent("Project/Main/Record_Site", "click", "showTabGroup(\"Site\")");
 onEvent("Site/Site_Recording/Take_From_GPS", "click", "takePoint()");
 onEvent("Site/Photolog/Record_External_Photo", "click", "showTabGroup(\"Photolog\")");
 
-onEvent("Project/Main", "show", "updateGPSStatus(); addSampleNavigation();");
+onEvent("Project/Main", "show", "updateGPSStatus(); addSampleNavigation(); createEntityAndPopulateMain();");
+onEvent("Site", "show", "createSiteAndPopulateSiteRecording()");
