@@ -6,28 +6,7 @@ String userid;
 String username;
 
 makeLocalID(){
-    fetchOne("CREATE TABLE IF NOT EXISTS localSettings (key text primary key, value text);");
-    fetchOne("drop view latestNonDeletedArchEntFormattedIdentifiers;");
-    fetchOne("CREATE VIEW latestNonDeletedArchEntFormattedIdentifiers as " +
-              "SELECT uuid, aenttypeid, aenttypename, group_concat(response, '') as response, null as deleted " +
-              "FROM ( " +
-                "SELECT uuid, aenttypeid, aenttypename, group_concat(format(formatstring, vocabname, measure, freetext, certainty), appendcharacterstring) as response, null as deleted, aentcountorder " +
-                "FROM ( " +
-                  "SELECT uuid, aenttypeid, aenttypename, formatstring, vocabname, measure, freetext, certainty, appendcharacterstring, null as deleted, aentcountorder, vocabcountorder, attributeid " +
-                  "FROM latestNonDeletedArchent " +
-                    "JOIN aenttype using (aenttypeid) " +
-                    "JOIN (SELECT * FROM idealaent where isIdentifier='true') using (aenttypeid) " +
-                    "join attributekey  using (attributeid) " +
-                    "left outer join latestNonDeletedAentValue using (uuid, attributeid) " +
-                    "left outer join vocabulary using (attributeid, vocabid) " +
-                  "order by uuid, aentcountorder, vocabcountorder " +
-                ") " +
-                "group by uuid, attributeid " +
-                "having response is not null " +
-                "order by uuid, aentcountorder) " +
-              "group by uuid " +
-              "order by uuid;"
-    );
+    fetchOne("CREATE TABLE IF NOT EXISTS localSettings (key text primary key, value text);");   
 }
 makeLocalID();
 
@@ -62,21 +41,8 @@ populateUserDetailsAndShowProject() {
 populateControlTabGroup() {
 	if (userid == null) userid = getListItemValue(); // userid will only be null on first login (and subsequent accesses of the login tabgroup)
 
-    q  = "";
-    q += "SELECT  UUID, Measure ";
-    q += "FROM    AentValue ";
-    q += "WHERE   AttributeID IS NOT NULL ";
-    q += "AND     Deleted IS NULL ";
-    q += "AND     AttributeID IN ( ";
-    q += "    SELECT  AttributeID ";
-    q += "    FROM    AttributeKey ";
-    q += "    WHERE   AttributeName='recordId');";
-    fetchAll(q, new FetchCallback() {
-    onFetch(result) {
-    	print("load result:  " + result);
-      	populateList("control/control/savedRecords", result);
-    }   
-  });
+    //don't write your own query here. Use the search queries from csiro.
+
 }
 
 /** Action Bar **/
@@ -175,22 +141,7 @@ createEntityAndPopulateBettong() {
     newTabGroup("bettong");
     setFieldValue("bettong/physicalCharacteristics/scribe", username);
 
-    q  = "";
-    q += "SELECT  COALESCE(MAX(Cast(Measure as decimal)), 0) + 1 ";
-    q += "FROM    AentValue ";
-    q += "WHERE   AttributeID IS NOT NULL ";
-    q += "AND     Deleted IS NULL ";
-    q += "AND     AttributeID IN ( ";
-    q += "    SELECT  AttributeID ";
-    q += "    FROM    AttributeKey ";
-    q += "    WHERE   AttributeName='recordId');";
-
-    fetchOne(q, new FetchCallback() {
-        onFetch(result) {
-			setFieldValue("bettong/physicalCharacteristics/recordId", result.get(0));
-			saveEntity();
-        }
-    });
+    //take autonumbering from csiro, make sure to support localsettings preservation of ID. 
 }
 
 loadEntityAndPopulateBettong() {
@@ -436,6 +387,9 @@ makeVocab(String type, String path, String attrib){
             }
         });
 }
+
+// These should go in functions so we can see what's populating what.
+
 
 makeVocab("CheckBoxGroup" , "Site/Site_Recording/Cultural_Material_Present" , "Cultural_Material_Present");
 makeVocab("CheckBoxGroup" , "Site/Site_Recording/Sketches"                  , "Sketches");
