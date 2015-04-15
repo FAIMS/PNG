@@ -46,7 +46,18 @@
               <All_Site_Records/>
             </Records>
             <Map>
-              <Actual_Map/>
+              <map/>
+              <container1>
+                <child1>
+                  <Centre_Map/>
+                </child1>
+                <child2>
+                  <Save_Map_Settings/>
+                </child2>
+                <child3>
+                  <Create_Shape/>
+                </child3>
+              </container1>
             </Map>
           </Project>
           <Site>
@@ -68,8 +79,12 @@
               <Land_Owners/>
               <Informant_Details/>
               <Col_Group_3>
-                <Latitude/>
-                <Longitude/>
+                <Col_Group_31>
+                  <Latitude/>
+                </Col_Group_31>
+                <Col_Group_32>
+                  <Longitude/>
+                </Col_Group_32>
               </Col_Group_3>
               <Col_Group_4>
                 <Northing/>
@@ -123,6 +138,21 @@
     </model>
   </h:head>
   <h:body>
+    <group ref="style">
+      <label/>
+      <group ref="orientation">
+        <label/>
+        <input ref="orientation">
+          <label>horizontal</label>
+        </input>
+      </group>
+      <group ref="even">
+        <label/>
+        <input ref="layout_weight">
+          <label>1</label>
+        </input>
+      </group>
+    </group>
     <group ref="Users">
       <label>{Users}</label>
       <group ref="Login">
@@ -146,27 +176,27 @@
         <input ref="Author">
           <label>{Author}</label>
         </input>
-        <group ref="Col_Group_1">
+        <group ref="Col_Group_1" faims_style="orientation">
           <label></label>
-          <group ref="Col_Group_10">
+          <group ref="Col_Group_10" faims_style="even">
             <label></label>
             <input ref="Site_Code">
               <label>{Site_Code}</label>
             </input>
           </group>
-          <group ref="Col_Group_11">
+          <group ref="Col_Group_11" faims_style="even">
             <label></label>
             <input ref="Site_Number">
               <label>{Site_Number}</label>
             </input>
           </group>
         </group>
-        <trigger ref="Record_Site">
+        <trigger ref="Record_Site" faims_style_class="faims-blue">
           <label>{Record_Site}</label>
         </trigger>
-        <group ref="GPS_Diagnostics">
-          <label></label>
-        </group>
+        <input ref="GPS_Diagnostics" faims_web="false" faims_certainty="false" faims_annotation="false" faims_read_only="true" faims_style_class="gps-status">
+          <label>{GPS_Diagnostics}</label>
+        </input>
       </group>
       <group ref="Records">
         <label>{Records}</label>
@@ -178,10 +208,31 @@
           </item>
         </select1>
       </group>
-      <group ref="Map">
+      <group ref="Map" faims_scrollable="false">
         <label>{Map}</label>
-        <group ref="Actual_Map">
-          <label>{Actual_Map}</label>
+         <input ref="map" faims_map="true" faims_certainty="false">
+          <label/>
+        </input>
+        <group faims_style="orientation" ref="container1">
+          <label/>
+          <group faims_style="even" ref="child1">
+            <label/>
+            <trigger ref="Centre_Map" faims_style_class="faims-blue">
+              <label>{Centre_Map}</label>
+            </trigger>
+          </group>
+          <group faims_style="even" ref="child2">
+            <label/>
+            <trigger ref="Save_Map_Settings" faims_style_class="faims-blue">
+              <label>{Save_Map_Settings}</label>
+            </trigger>
+          </group>
+          <group faims_style="even" ref="child3">
+            <label/>
+            <trigger ref="Create_Shape" faims_style_class="faims-blue">
+              <label>{Create_Shape}</label>
+            </trigger>
+          </group>
         </group>
       </group>
     </group>
@@ -189,15 +240,15 @@
       <label>{Site}</label>
       <group ref="Site_Recording">
         <label>{Site_Recording}</label>
-        <group ref="Col_Group_2">
+        <group ref="Col_Group_2" faims_style="orientation">
           <label></label>
-          <group ref="Col_Group_20">
+          <group ref="Col_Group_20" faims_style="even">
             <label></label>
             <input ref="Site_Code" faims_attribute_name="Site_Code" faims_attribute_type="freetext" faims_read_only="true">
               <label>{Site_Code}</label>
             </input>
           </group>
-          <group ref="Col_Group_21">
+          <group ref="Col_Group_21" faims_style="even">
             <label></label>
             <input ref="Site_Number" faims_attribute_name="Site_Number" faims_attribute_type="freetext" faims_read_only="true">
               <label>{Site_Number}</label>
@@ -236,14 +287,20 @@
         <input ref="Informant_Details" faims_attribute_name="Informant_Details" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true">
           <label>{Informant_Details}</label>
         </input>
-        <group ref="Col_Group_3">
+        <group ref="Col_Group_3" faims_style="orientation">
           <label></label>
-          <input ref="Latitude" faims_attribute_name="Latitude" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true">
-            <label>{Latitude}</label>
-          </input>
-          <input ref="Longitude" faims_attribute_name="Longitude" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true">
-            <label>{Longitude}</label>
-          </input>
+          <group ref="Col_Group_31" faims_style="even">
+            <label></label>
+            <input ref="Latitude" faims_attribute_name="Latitude" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true">
+              <label>{Latitude}</label>
+            </input>
+          </group>
+          <group ref="Col_Group_32" faims_style="even">
+            <label></label>
+            <input ref="Longitude" faims_attribute_name="Longitude" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true">
+              <label>{Longitude}</label>
+            </input>
+          </group>
         </group>
         <group ref="Col_Group_4">
           <label></label>
@@ -254,7 +311,7 @@
             <label>{Easting}</label>
           </input>
         </group>
-        <trigger ref="Take_From_GPS">
+        <trigger ref="Take_From_GPS" faims_style_class="faims-blue">
           <label>{Take_From_GPS}</label>
         </trigger>
         <group ref="Col_Group_5">
@@ -353,7 +410,7 @@
             <value>placeholder</value>
           </item>
         </select>
-        <trigger ref="Attach_A_Sketch">
+        <trigger ref="Attach_A_Sketch" faims_style_class="faims-blue">
           <label>{Attach_A_Sketch}</label>
         </trigger>
       </group>
@@ -369,7 +426,7 @@
         <input ref="Measurement" faims_attribute_name="Measurement" faims_attribute_type="freetext">
           <label>{Measurement}</label>
         </input>
-        <trigger ref="Add_A_Measurement">
+        <trigger ref="Add_A_Measurement" faims_style_class="faims-blue">
           <label>{Add_A_Measurement}</label>
         </trigger>
         <select1 appearance="compact" ref="List_Of_Measurements">
@@ -382,7 +439,7 @@
       </group>
       <group ref="Photolog">
         <label>{Photolog}</label>
-        <trigger ref="Record_External_Photo" faims_attribute_name="Record_External_Photo">
+        <trigger ref="Record_External_Photo" faims_attribute_name="Record_External_Photo" faims_style_class="faims-blue">
           <label>{Record_External_Photo}</label>
         </trigger>
         <select1 appearance="compact" ref="List_Of_External_Photos">

@@ -415,7 +415,7 @@ onEvent("Users/Login", "show", "populateUsers()");
 onEvent("Users/Login/Author_List", "click", "populateUserDetailsAndShowProject()");
 onEvent("Project/Main/Record_Site", "click", "showTabGroup(\"Site\")");
 
-onEvent("Site/Site_Recording/Take_GPS", "click", "takePoint()");
+onEvent("Site/Site_Recording/Take_From_GPS", "click", "takePoint()");
 onEvent("Site/Photolog/Record_External_Photo", "click", "showTabGroup(\"Photolog\")");
 
 onEvent("Project/Main", "show", "updateGPSStatus(); addSampleNavigation();");
