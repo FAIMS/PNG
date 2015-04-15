@@ -127,7 +127,7 @@
       <label>{Users}</label>
       <group ref="Login">
         <label>{Login}</label>
-        <select1 appearance="compact" ref="Author_List" faims_attribute_name="Author_List" faims_attribute_type="vocab">
+        <select1 appearance="compact" ref="Author_List" faims_attribute_type="vocab">
           <label>{Author_List}</label>
           <item>
             <label>placeholder</label>
