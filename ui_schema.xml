@@ -127,7 +127,7 @@
       <label>{Users}</label>
       <group ref="Login">
         <label>{Login}</label>
-        <select1 appearance="compact" ref="Author_List" faims_attribute_name="Author_List" faims_attribute_type="vocab">
+        <select1 appearance="compact" ref="Author_List">
           <label>{Author_List}</label>
           <item>
             <label>placeholder</label>
@@ -140,23 +140,23 @@
       <label>{Project, arch16n: Project}</label>
       <group ref="Main">
         <label>{Main}</label>
-        <input ref="Team_Members" faims_attribute_name="Team_Members" faims_attribute_type="freetext">
+        <input ref="Team_Members">
           <label>{Team_Members}</label>
         </input>
-        <input ref="Author" faims_attribute_name="Author" faims_attribute_type="freetext">
+        <input ref="Author">
           <label>{Author}</label>
         </input>
         <group ref="Col_Group_1">
           <label></label>
           <group ref="Col_Group_10">
             <label></label>
-            <input ref="Site_Code" faims_attribute_name="Site_Code" faims_attribute_type="freetext">
+            <input ref="Site_Code">
               <label>{Site_Code}</label>
             </input>
           </group>
           <group ref="Col_Group_11">
             <label></label>
-            <input ref="Site_Number" faims_attribute_name="Site_Number" faims_attribute_type="measure">
+            <input ref="Site_Number">
               <label>{Site_Number}</label>
             </input>
           </group>
@@ -170,7 +170,7 @@
       </group>
       <group ref="Records">
         <label>{Records}</label>
-        <select1 appearance="compact" ref="All_Site_Records" faims_attribute_name="All_Site_Records" faims_attribute_type="vocab">
+        <select1 appearance="compact" ref="All_Site_Records">
           <label>{All_Site_Records}</label>
           <item>
             <label>placeholder</label>
@@ -204,10 +204,10 @@
             </input>
           </group>
         </group>
-        <input ref="Created_At" faims_attribute_name="Created_At" faims_attribute_type="freetext" faims_read_only="true">
+        <input ref="Created_At" faims_read_only="true">
           <label>{Created_At}</label>
         </input>
-        <input ref="Author" faims_attribute_name="Author" faims_attribute_type="freetext" faims_read_only="true">
+        <input ref="Author" faims_read_only="true">
           <label>{Author}</label>
         </input>
         <input ref="Team" faims_attribute_name="Team" faims_attribute_type="freetext" faims_read_only="true">
@@ -376,7 +376,7 @@
         <trigger ref="Add_A_Measurement">
           <label>{Add_A_Measurement}</label>
         </trigger>
-        <select1 appearance="compact" ref="List_Of_Measurements" faims_attribute_name="List_Of_Measurements" faims_attribute_type="vocab">
+        <select1 appearance="compact" ref="List_Of_Measurements">
           <label>{List_Of_Measurements}</label>
           <item>
             <label>placeholder</label>
@@ -389,7 +389,7 @@
         <trigger ref="Record_External_Photo" faims_attribute_name="Record_External_Photo">
           <label>{Record_External_Photo}</label>
         </trigger>
-        <select1 appearance="compact" ref="List_Of_External_Photos" faims_attribute_name="List_Of_External_Photos" faims_attribute_type="vocab">
+        <select1 appearance="compact" ref="List_Of_External_Photos">
           <label>{List_Of_External_Photos}</label>
           <item>
             <label>placeholder</label>
