@@ -408,9 +408,9 @@
         <term> {Cave}
           <description/>
           <term> {Max_Depth}
-            <decription>
+            <description>
               Maximum depth of cave/rockshelter interior
-            </decription>
+            </description>
           </term>
           <term> {Max_Width}
             <description>
