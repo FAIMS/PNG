@@ -1,38 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSchema>
-  <ArchaeologicalElement name="Project" type="enum">
+  <ArchaeologicalElement name="Site">
     <description></description>
-    <property name="Team_Members" type="freetext">
-      <description/>
-    </property>
-    <property name="Author" type="freetext">
-      <description/>
-    </property>
     <property name="Site_Code" type="freetext">
       <description/>
     </property>
-    <property name="Site_Number" type="measure">
-      <description/>
-    </property>
-    <property name="Records" type="enum">
-      <description/>
-      <lookup>
-        <term> {Records}
-          <description/>
-        </term>
-      </lookup>
-    </property>
-    <property name="All_Site_Records" type="enum">
-      <description/>
-      <lookup>
-        <term> {All_Site_Records}
-          <description/>
-        </term>
-      </lookup>
-    </property>
-  </ArchaeologicalElement>
-  <ArchaeologicalElement name="Site" type="freetext">
-    <description></description>
     <property name="Site_Number" type="freetext" isIdentifier="true">
       <description/>
     </property>
@@ -317,7 +289,7 @@
       </lookup>
     </property>
   </ArchaeologicalElement>
-  <ArchaeologicalElement name="Measurement" type="enum">
+  <ArchaeologicalElement name="Measurement">
     <description></description>
     <property name="Measurement_Type" type="enum">
       <description/>
@@ -574,5 +546,11 @@
     <property name="Measurement_Field" type="freetext">
       <description/>
     </property>
+  </ArchaeologicalElement>
+  <ArchaeologicalElement name="External_Photo">
+    <description/>
+    <property name="ID" type="freetext"> <description/> </property>
+    <property name="Timestamp" type="freetext"> <description/> </property>
+    <property name="Note" type="freetext"> <description/> </property>
   </ArchaeologicalElement>
 </dataSchema>
