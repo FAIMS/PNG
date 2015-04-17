@@ -1,12 +1,13 @@
 /*** 'Editable' - you can edit the code below based on the needs ***/
 import java.util.concurrent.Callable;
+import android.util.Log;
 
 User user; // don't touch
 String userid;
 String username;
 
 makeLocalID(){
-    fetchOne("CREATE TABLE IF NOT EXISTS localSettings (key text primary key, value text);");   
+    fetchOne("CREATE TABLE IF NOT EXISTS localSettings (key text primary key, value text);");
 }
 makeLocalID();
 
@@ -17,8 +18,8 @@ makeLocalID();
 /*** Uneditable - you can edit the code below with extreme precaution ***/
 /*** USER ***/
 
-populateUsers() {
-	userid = null;
+loadUsers() {
+    userid = null;
     fetchAll("SELECT userid, fname || ' ' || lname FROM user WHERE userdeleted IS null;", new FetchCallback() {
         onFetch(result) {
             populateList("Users/Login/Author_List", result);
@@ -26,8 +27,8 @@ populateUsers() {
     });
 }
 
-populateUserDetailsAndShowProject() {
-	userid = getListItemValue();
+login() {
+    userid = getListItemValue();
     fetchOne("SELECT userid,fname,lname,email FROM user where userid='" + userid + "';", new FetchCallback() {
         onFetch(result) {
             user = new User(result.get(0),result.get(1),result.get(2),result.get(3));
@@ -39,7 +40,7 @@ populateUserDetailsAndShowProject() {
 }
 
 populateControlTabGroup() {
-	if (userid == null) userid = getListItemValue(); // userid will only be null on first login (and subsequent accesses of the login tabgroup)
+    if (userid == null) userid = getListItemValue(); // userid will only be null on first login (and subsequent accesses of the login tabgroup)
 
     //don't write your own query here. Use the search queries from csiro.
 
@@ -124,103 +125,141 @@ addActionBarItem("external_gps", new ToggleActionButtonCallback() {
 
 entity_id = null;
 saveEntity() {
-	enable_autosave = true;
-	saveTabGroup("bettong", entity_id, null, null, new SaveCallback() {
+    enable_autosave = true;
+    saveTabGroup("bettong", entity_id, null, null, new SaveCallback() {
     onSave(uuid, newRecord) {
-	    	entity_id = uuid;
-	    	if(newRecord) {
-	    		showToast("{New_Record_Created}");
-	    	}
-	    }
-	},
-	enable_autosave);
+            entity_id = uuid;
+            if(newRecord) {
+                showToast("{New_Record_Created}");
+            }
+        }
+    },
+    enable_autosave);
 }
 
-createSiteAndPopulateSiteRecording() {
-	entity_id = null;
-    //newTabGroup("bettong");
-    siteCode = getFieldValue("Project/Main/Site_Code");
+createSite() {
+    entity_id = null;
+
+    siteCode   = getFieldValue("Project/Main/Site_Code");
     siteNumber = getFieldValue("Project/Main/Site_Number");
-    setFieldValue("Site/Site_Recording/Author", username);
-    setFieldValue("Site/Site_Recording/Site_Code", siteCode);
-    setFieldValue("Site/Site_Recording/Site_Number", siteNumber);
+    team       = getFieldValue("Project/Main/Team_Members");
+    setFieldValue("Site/Site_Recording/Author"      , username);
+    setFieldValue("Site/Site_Recording/Site_Code"   , siteCode);
+    setFieldValue("Site/Site_Recording/Site_Number" , siteNumber);
+    setFieldValue("Site/Site_Recording/Team"        , team);
+    setTimestamp( "Site/Site_Recording/Created_At");
 
     //take autonumbering from csiro, make sure to support localsettings preservation of ID. 
 }
 
+//setSitePrefix(String samplePrefix) {
+    //setFieldValue("Project/Start/Sample_Prefix", samplePrefix);
+    //fetchOne("REPLACE INTO localSettings(key, value) VALUES('Sample Prefix', '" + samplePrefix + "');", null);
+//}
+
+setSiteStartingID(String siteStartingID) {
+    setFieldValue("Site/Site_Recording/Site_Number", siteStartingID);
+    fetchOne("REPLACE INTO localSettings(key, value) VALUES('Site_Number', '" + siteStartingID + "');", null);
+}
+
+/* Loads the sample starting ID if one exists, otherwise defaults to '1'. */
+loadSiteStartingID() {
+    //fetchOne("SELECT value FROM localSettings WHERE key = 'Sample Starting ID';", new FetchCallback() {
+    fetchOne("SELECT value FROM localSettings WHERE key = 'Site_Number';", new FetchCallback() {
+        onFetch(result) {
+            Log.v("", "[loadSiteStartingID()] fetched sample ID from localSettings: " + result);
+            if (isNull(result)) {
+                siteStartingID = "1";
+                setSiteStartingID(siteStartingID);
+            } else {
+                siteStartingID = result.get(0);
+                setFieldValue("Site/Site_Recording/Site_Number", siteStartingID);
+                Log.v("", "[loadSiteStartingID()] set sample starting ID to: " + siteStartingID);
+            }
+        }
+    });
+}
+
 createEntityAndPopulateMain() {
-	entity_id = null;
+    entity_id = null;
     //newTabGroup("bettong");
     setFieldValue("Project/Main/Author", username);
 
     //take autonumbering from csiro, make sure to support localsettings preservation of ID. 
 }
 
+setTimestamp(String path) {
+    setFieldValue(path, new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(new Date()));
+}
+
 loadEntityAndPopulateBettong() {
-  entity_id = getListItemValue();
-  showTabGroup("bettong", entity_id);
+    entity_id = getListItemValue();
+    showTabGroup("bettong", entity_id);
 }
 
 getGpsCoordinates() {
     location = getGPSPosition();
     if (!isExternalGPSOn() && !isInternalGPSOn()) {
-    	showWarning("{Err_Loc}", "{Err_Con}");
-    	return;
+        showWarning("{Err_Loc}", "{Err_Con}");
+        return;
     }
     if (location == null){
-    	showWarning("{Err_Loc}", "{Err_Sig}");
-    	return;
+        showWarning("{Err_Loc}", "{Err_Sig}");
+        return;
     }
 
-	lat = location.getLatitude();
-	lon = location.getLongitude();
-	tabgroup = "bettong/approachAndRemoval/";
-	setFieldValue(tabgroup + "latitude",  lat);
-	setFieldValue(tabgroup + "longitude", lon);
+    lat = location.getLatitude();
+    lon = location.getLongitude();
+    tabgroup = "bettong/approachAndRemoval/";
+    setFieldValue(tabgroup + "latitude",  lat);
+    setFieldValue(tabgroup + "longitude", lon);
 }
 
 fillInGPS() {
-    if (isNull(currentSampleUUID)) {
+    location = getGPSPosition();
+    locationProj = getGPSPositionProjected();
+    if (!isExternalGPSOn() && !isInternalGPSOn()) {
+        showWarning("{Err_Loc}", "{Err_Con}");
         return;
     }
-    String tabgroup = getSampleTypePath();
-    String query = "select x(transform(geospatialcolumn, 4326)) as longtiude, y(transform(geospatialcolumn, 4326)) as latitude, x(transform(geospatialcolumn, CAST (vocabname AS INTEGER))) as easting, y(transform(geospatialcolumn, CAST (vocabname AS INTEGER))) as northing " +
-        "from latestnondeletedarchent, vocabulary " +
-        "where uuid = " + currentSampleUUID + " " +
-        "and vocabid = " + getFieldValue(tabgroup + "/Basic_Info/SRID") + ";";
-    fetchOne(query, new FetchCallback() {
-        onFetch(result) {
-            print("[fillInGPS()] Fetched DB transformed geometry: " + result);
-            setFieldValue(tabgroup + "/Basic_Info/Latitude", result.get(0));
-            setFieldValue(tabgroup + "/Basic_Info/Longitude", result.get(1));
-            setFieldValue(tabgroup + "/Basic_Info/Northing", result.get(2));
-            setFieldValue(tabgroup + "/Basic_Info/Easting", result.get(3));
-        }
-    });
-}
-
-takePoint() {
-    Object position = getGPSPosition();
-    if (position == null) {
-        showToast("{GPS_Not_Initialised}");
+    if (location == null){
+        showWarning("{Err_Loc}", "{Err_Sig}");
         return;
     }
-    Object projPosition = getGPSPositionProjected();
-    Double latitude = position.getLatitude();
-    Double longitude = position.getLongitude();
-    Double northing = projPosition.getLatitude();
-    Double easting = projPosition.getLongitude();
 
-    samplePoint = new Point(new MapPos(easting, northing), null, (PointStyle) null, null);
-    ArrayList geolist = new ArrayList();
-    geolist.add(samplePoint);
-    saveArchEnt(currentSampleUUID, getSampleType(), geolist, null, new SaveCallback() {
-        onSave(uuid, newRecord) {
-            print("[takePoint()] Added geometry: " + geolist);
-            fillInGPS();
-        }  
-    });    
+    tab = "Site/Site_Recording/";
+    lat = location.getLatitude();
+    lon = location.getLongitude();
+    nor = locationProj.getLatitude();
+    eas = locationProj.getLongitude();
+    setFieldValue(tab + "Latitude"  , lat);
+    setFieldValue(tab + "Longitude" , lon);
+    setFieldValue(tab + "Northing"  , nor);
+    setFieldValue(tab + "Easting"   , eas);
 }
+
+/*takePoint() {*/
+    //Object position = getGPSPosition();
+    //if (position == null) {
+        //showToast("{GPS_Not_Initialised}");
+        //return;
+    //}
+    //Object projPosition = getGPSPositionProjected();
+    //Double latitude = position.getLatitude();
+    //Double longitude = position.getLongitude();
+    //Double northing = projPosition.getLatitude();
+    //Double easting = projPosition.getLongitude();
+
+    //samplePoint = new Point(new MapPos(easting, northing), null, (PointStyle) null, null);
+    //ArrayList geolist = new ArrayList();
+    //geolist.add(samplePoint);
+    //saveArchEnt(currentSampleUUID, getSampleType(), geolist, null, new SaveCallback() {
+        //onSave(uuid, newRecord) {
+            //Log.v("", "[takePoint()] Added geometry: " + geolist);
+            //fillInGPS();
+        //}  
+    //});    
+/*}*/
 
 String getSampleTypePath() {
     String tabgroup = null;
@@ -234,7 +273,7 @@ String getSampleTypePath() {
     } else if(type.equals("Rock Sample")) {
         tabgroup = "Rock_Sample";
     }
-    print("[getSampleTypePath()] Tabgroup is: " + tabgroup);
+    Log.d("", "[getSampleTypePath()] Tabgroup is: " + tabgroup);
     return tabgroup;
 }
 
@@ -297,19 +336,19 @@ removeNavigationButtons() {
 /* Generates a confirmation prompt for deleting the current sample. */
 deleteSample() {
     tabgroup = getSampleTypePath();
-    print("[deleteSample()] Prompting a sample deletion, currentSampleUUID = " + currentSampleUUID);
+    Log.v("", "[deleteSample()] Prompting a sample deletion, currentSampleUUID = " + currentSampleUUID);
     if (!isNull(currentSampleUUID)) {
-        print("[deleteSample()] Confirming a sample deletion");
+        Log.v("", "[deleteSample()] Confirming a sample deletion");
         showAlert("{Confirm_Deletion}", "{Press_To_Delete} {" + tabgroup + "}!", "reallyDeleteSample()", "doNotDelete()");
     } else {
         cancelTabGroup(tabgroup, true);
-        print("[deleteSample()] Cancelling a sample deletion.");
+        Log.v("", "[deleteSample()] Cancelling a sample deletion.");
     }
 }
 
 /* Deletes the current water sample. */
 reallyDeleteSample() {
-    print("[reallyDeleteSample()] Really deleting the sample.");
+    Log.v("", "[reallyDeleteSample()] Really deleting the sample.");
     tabgroup = getSampleTypePath();
     deleteArchEnt(currentSampleUUID, new DeleteCallback() {
         onDelete(uuid) {
@@ -332,7 +371,7 @@ updateGPSStatus() {
             if (previousStatus.subSequence(0, error.length()).equals(error)) {
                 status = previousStatus;
             } else {
-                print("[updateGPSStatus] Previous status subSequence: " + previousStatus.subSequence(0, error.length()-1));
+                Log.d("", "[updateGPSStatus] Previous status subSequence: " + previousStatus.subSequence(0, error.length()-1));
                 status = error + "\n" + previousStatus;
             }
         } else {
@@ -340,9 +379,23 @@ updateGPSStatus() {
         }
     } else {
         status += "Internal GPS: ";
-        if (isInternalGPSOn()) {status += "on";} else {status += "off";}
+        if (isInternalGPSOn())
+        {
+            status += "on";
+        } else {
+            status += "off";
+        }
         status += "\nExternal GPS: ";
-        if (isExternalGPSOn()) {if (isBluetoothConnected()) {status += "on and bluetooth connected";} else {status += "on and bluetooth disconnected";}} else {status += "off";}
+        if (isExternalGPSOn())
+        {
+            if (isBluetoothConnected()) {
+                status += "on and bluetooth connected";
+            } else {
+                status += "on and bluetooth disconnected";
+            }
+        } else {
+            status += "off";
+        }
         Object position = getGPSPosition();
         if (position != null) {
             Object projPosition = getGPSPositionProjected();
@@ -356,7 +409,7 @@ updateGPSStatus() {
             status += "\nPosition: no GPS position could be found";
         }
     }
-    print("[updateGPSStatus()] GPS status: " + status);
+    Log.v("", "[updateGPSStatus()] GPS status: " + status);
     setFieldValue("Project/Main/GPS_Diagnostics", status);
 }
 
@@ -414,7 +467,6 @@ makeVocab("DropDown"      , "Site/Site_Recording/Site_Type"                 , "S
 makeVocab("DropDown"      , "Site/Site_Recording/Surface_Geomorphology"     , "Surface_Geomorphology");
 makeVocab("DropDown"      , "Site/Site_Recording/Vegetation"                , "Vegetation");
 makeVocab("RadioGroup"    , "Site/Site_Recording/Site_Significance"         , "Site_Significance");
-//makeVocab("DropDown"      , "Site/Measurements/Measurement_Type"            , "Measurement_Type");
 populateHierarchicalDropDown("Site/Measurements/Measurement_Type", "Measurement_Type");
 
 startInternalGPS();
@@ -423,12 +475,10 @@ setSyncEnabled(true);
 // onEvent("control/control/", "show", "populateControlTabGroup()");
 // onEvent("control/control/buttonNewRecord",  "click", "createEntityAndPopulateBettong()");
 // onEvent("control/control/savedRecords", "click", "loadEntityAndPopulateBettong()");
-onEvent("Users/Login", "show", "populateUsers()");
-onEvent("Users/Login/Author_List", "click", "populateUserDetailsAndShowProject()");
-onEvent("Project/Main/Record_Site", "click", "showTabGroup(\"Site\")");
-
-onEvent("Site/Site_Recording/Take_From_GPS", "click", "takePoint()");
-onEvent("Site/Photolog/Record_External_Photo", "click", "showTabGroup(\"Photolog\")");
-
-onEvent("Project/Main", "show", "updateGPSStatus(); addSampleNavigation(); createEntityAndPopulateMain();");
-onEvent("Site", "show", "createSiteAndPopulateSiteRecording()");
+onEvent("Project/Main"                        , "show"  , "updateGPSStatus(); addSampleNavigation(); createEntityAndPopulateMain(); loadSiteStartingID(); ");
+onEvent("Project/Main/Record_Site"            , "click" , "showTabGroup(\"Site\")");
+onEvent("Site"                                , "show"  , "createSite()");
+onEvent("Site/Photolog/Record_External_Photo" , "click" , "showTabGroup(\"Photolog\")");
+onEvent("Site/Site_Recording/Take_From_GPS"   , "click" , "fillInGPS()");
+onEvent("Users/Login"                         , "show"  , "loadUsers()");
+onEvent("Users/Login/Author_List"             , "click" , "login()");

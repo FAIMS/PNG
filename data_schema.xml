@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    $1 => Vocabname
+    $2 => Measure   = For unconstrained text
+    $3 => Freetext  = For annotations
+    $4 => Certainty
+-->
 <dataSchema>
   <ArchaeologicalElement name="Site">
     <description></description>
