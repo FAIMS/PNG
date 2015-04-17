@@ -2,11 +2,13 @@
 <dataSchema>
   <ArchaeologicalElement name="Site">
     <description></description>
-    <property name="Site_Code" type="freetext">
+    <property name="Site_Code" type="freetext" isIdentifier="true">
       <description/>
+      <formatString><![CDATA[$2]]></formatString>
     </property>
     <property name="Site_Number" type="freetext" isIdentifier="true">
       <description/>
+      <formatString><![CDATA[$2]]></formatString>
     </property>
     <property name="Created_At" type="freetext">
       <description/>
