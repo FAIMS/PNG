@@ -136,7 +136,7 @@
       </instance>
       <!-- Insert nodeset bindings here -->
       <!-- TODO: make this binding work: -->
-      <bind type="decimal" nodeset="/faims/Project/Main/Site_Number"/>
+      <bind type="decimal" nodeset="/faims/Project/Main/Col_Group_1/Col_Group_11/Site_Number"/>
     </model>
   </h:head>
   <h:body>
@@ -159,7 +159,7 @@
       <label>{Users}</label>
       <group ref="Login">
         <label>{Login}</label>
-        <select1 appearance="compact" ref="Author_List">
+        <select1 ref="Author_List" appearance="compact">
           <label>{Author_List}</label>
           <item>
             <label>placeholder</label>
@@ -202,10 +202,10 @@
       </group>
       <group ref="Records">
         <label>{Records}</label>
-        <select1 appearance="compact" ref="All_Site_Records">
+        <select1 ref="All_Site_Records" appearance="compact">
           <label>{All_Site_Records}</label>
           <item>
-            <label>No records yet!</label>
+            <label>No Records Yet</label>
             <value>placeholder</value>
           </item>
         </select1>
@@ -215,7 +215,7 @@
          <input ref="map" faims_map="true" faims_certainty="false">
           <label/>
         </input>
-        <group faims_style="orientation" ref="container1">
+        <group ref="container1" faims_style="orientation">
           <label/>
           <group faims_style="even" ref="child1">
             <label/>
@@ -276,7 +276,7 @@
             <value>placeholder</value>
           </item>
         </select1>
-        <select1 appearance="full" ref="Site_Significance" faims_attribute_name="Site_Significance" faims_attribute_type="vocab" faims_certainty="true" faims_annotation="true">
+        <select1 ref="Site_Significance" appearance="full" faims_attribute_name="Site_Significance" faims_attribute_type="vocab" faims_certainty="true" faims_annotation="true">
           <label>{Site_Significance}</label>
           <item>
             <label>placeholder</label>
@@ -293,23 +293,23 @@
           <label></label>
           <group ref="Col_Group_31" faims_style="even">
             <label></label>
-            <input ref="Latitude" faims_attribute_name="Latitude" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true">
+            <input ref="Latitude" faims_attribute_name="Latitude" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true" faims_read_only="true">
               <label>{Latitude}</label>
             </input>
           </group>
           <group ref="Col_Group_32" faims_style="even">
             <label></label>
-            <input ref="Longitude" faims_attribute_name="Longitude" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true">
+            <input ref="Longitude" faims_attribute_name="Longitude" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true" faims_read_only="true">
               <label>{Longitude}</label>
             </input>
           </group>
         </group>
         <group ref="Col_Group_4">
           <label></label>
-          <input ref="Northing" faims_attribute_name="Northing" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true">
+          <input ref="Northing" faims_attribute_name="Northing" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true" faims_read_only="true">
             <label>{Northing}</label>
           </input>
-          <input ref="Easting" faims_attribute_name="Easting" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true">
+          <input ref="Easting" faims_attribute_name="Easting" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true" faims_read_only="true">
             <label>{Easting}</label>
           </input>
         </group>
@@ -318,10 +318,10 @@
         </trigger>
         <group ref="Col_Group_5">
           <label></label>
-          <input ref="Accuracy" faims_attribute_name="Accuracy" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true">
+          <input ref="Accuracy" faims_attribute_name="Accuracy" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true" faims_read_only="true">
             <label>{Accuracy}</label>
           </input>
-          <input ref="Heading" faims_attribute_name="Heading" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true">
+          <input ref="Heading" faims_attribute_name="Heading" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true" faims_read_only="true">
             <label>{Heading}</label>
           </input>
         </group>
@@ -431,7 +431,7 @@
         <trigger ref="Add_A_Measurement" faims_style_class="faims-blue">
           <label>{Add_A_Measurement}</label>
         </trigger>
-        <select1 appearance="compact" ref="List_Of_Measurements">
+        <select1 ref="List_Of_Measurements" appearance="compact">
           <label>{List_Of_Measurements}</label>
           <item>
             <label>placeholder</label>
@@ -444,7 +444,7 @@
         <trigger ref="Record_External_Photo" faims_attribute_name="Record_External_Photo" faims_style_class="faims-blue">
           <label>{Record_External_Photo}</label>
         </trigger>
-        <select1 appearance="compact" ref="List_Of_External_Photos">
+        <select1 ref="List_Of_External_Photos" appearance="compact">
           <label>{List_Of_External_Photos}</label>
           <item>
             <label>placeholder</label>
@@ -463,7 +463,7 @@
         <input ref="Photo_Timestamp" faims_attribute_name="Photo_Timestamp" faims_attribute_type="freetext">
           <label>{Photo_Timestamp}</label>
         </input>
-        <input ref="Photo_Note" faims_attribute_name="Photo_Note" faims_attribute_type="freetext" faims_certainty="true" faims_read_only="true">
+        <input ref="Photo_Note" faims_attribute_name="Photo_Note" faims_attribute_type="freetext" faims_certainty="true">
           <label>{Photo_Note}</label>
         </input>
       </group>
