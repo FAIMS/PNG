@@ -116,7 +116,7 @@
             </Site_Recording>
             <Measurements>
               <Measurement_Type/>
-              <Measurement/>
+              <Measurement_Field/>
               <Add_A_Measurement/>
               <List_Of_Measurements/>
             </Measurements>
@@ -127,9 +127,9 @@
           </Site>
           <Photolog>
             <Photolog>
-              <Photo_ID/>
-              <Photo_Timestamp/>
-              <Photo_Note/>
+              <ID/>
+              <Timestamp/>
+              <Note/>
             </Photolog>
           </Photolog>
         </faims>
@@ -425,7 +425,7 @@
             <value>placeholder</value>
           </item>
         </select1>
-        <input ref="Measurement" faims_attribute_name="Measurement" faims_attribute_type="freetext">
+        <input ref="Measurement_Field" faims_attribute_name="Measurement_Field" faims_attribute_type="freetext">
           <label>{Measurement}</label>
         </input>
         <trigger ref="Add_A_Measurement" faims_style_class="faims-blue">
@@ -457,13 +457,13 @@
       <label>{Photolog}</label>
       <group ref="Photolog">
         <label>{Photolog}</label>
-        <input ref="Photo_ID" faims_attribute_name="Photo_ID" faims_attribute_type="freetext">
+        <input ref="ID" faims_attribute_name="ID" faims_attribute_type="freetext">
           <label>{Photo_ID}</label>
         </input>
-        <input ref="Photo_Timestamp" faims_attribute_name="Photo_Timestamp" faims_attribute_type="freetext">
+        <input ref="Timestamp" faims_attribute_name="Timestamp" faims_attribute_type="freetext">
           <label>{Photo_Timestamp}</label>
         </input>
-        <input ref="Photo_Note" faims_attribute_name="Photo_Note" faims_attribute_type="freetext" faims_certainty="true">
+        <input ref="Note" faims_attribute_name="Note" faims_attribute_type="freetext" faims_certainty="true">
           <label>{Photo_Note}</label>
         </input>
       </group>
