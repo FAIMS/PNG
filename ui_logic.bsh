@@ -150,6 +150,7 @@ createSite() {
     setTimestamp( "Site/Site_Recording/Created_At");
 
     //take autonumbering from csiro, make sure to support localsettings preservation of ID. 
+    setSiteStartingID(Integer.toString(Integer.parseInt(siteNumber) + 1));
 }
 
 //setSitePrefix(String samplePrefix) {
@@ -158,7 +159,7 @@ createSite() {
 //}
 
 setSiteStartingID(String siteStartingID) {
-    setFieldValue("Site/Site_Recording/Site_Number", siteStartingID);
+    setFieldValue("Project/Main/Site_Number", siteStartingID);
     fetchOne("REPLACE INTO localSettings(key, value) VALUES('Site_Number', '" + siteStartingID + "');", null);
 }
 
@@ -173,7 +174,7 @@ loadSiteStartingID() {
                 setSiteStartingID(siteStartingID);
             } else {
                 siteStartingID = result.get(0);
-                setFieldValue("Site/Site_Recording/Site_Number", siteStartingID);
+                setFieldValue("Project/Main/Site_Number", siteStartingID);
                 Log.v("", "[loadSiteStartingID()] set sample starting ID to: " + siteStartingID);
             }
         }
@@ -228,6 +229,8 @@ fillInGPS() {
     }
 
     tab = "Site/Site_Recording/";
+    acc = getGPSEstimatedAccuracy();
+    hea = getGPSHeading();
     lat = location.getLatitude();
     lon = location.getLongitude();
     nor = locationProj.getLatitude();
@@ -236,30 +239,9 @@ fillInGPS() {
     setFieldValue(tab + "Longitude" , lon);
     setFieldValue(tab + "Northing"  , nor);
     setFieldValue(tab + "Easting"   , eas);
+    setFieldValue(tab + "Accuracy"  , nor);
+    setFieldValue(tab + "Heading"   , hea);
 }
-
-/*takePoint() {*/
-    //Object position = getGPSPosition();
-    //if (position == null) {
-        //showToast("{GPS_Not_Initialised}");
-        //return;
-    //}
-    //Object projPosition = getGPSPositionProjected();
-    //Double latitude = position.getLatitude();
-    //Double longitude = position.getLongitude();
-    //Double northing = projPosition.getLatitude();
-    //Double easting = projPosition.getLongitude();
-
-    //samplePoint = new Point(new MapPos(easting, northing), null, (PointStyle) null, null);
-    //ArrayList geolist = new ArrayList();
-    //geolist.add(samplePoint);
-    //saveArchEnt(currentSampleUUID, getSampleType(), geolist, null, new SaveCallback() {
-        //onSave(uuid, newRecord) {
-            //Log.v("", "[takePoint()] Added geometry: " + geolist);
-            //fillInGPS();
-        //}  
-    //});    
-/*}*/
 
 String getSampleTypePath() {
     String tabgroup = null;
@@ -331,30 +313,6 @@ removeNavigationButtons() {
     removeNavigationButton("new");
     removeNavigationButton("duplicate");
     removeNavigationButton("delete");
-}
-
-/* Generates a confirmation prompt for deleting the current sample. */
-deleteSample() {
-    tabgroup = getSampleTypePath();
-    Log.v("", "[deleteSample()] Prompting a sample deletion, currentSampleUUID = " + currentSampleUUID);
-    if (!isNull(currentSampleUUID)) {
-        Log.v("", "[deleteSample()] Confirming a sample deletion");
-        showAlert("{Confirm_Deletion}", "{Press_To_Delete} {" + tabgroup + "}!", "reallyDeleteSample()", "doNotDelete()");
-    } else {
-        cancelTabGroup(tabgroup, true);
-        Log.v("", "[deleteSample()] Cancelling a sample deletion.");
-    }
-}
-
-/* Deletes the current water sample. */
-reallyDeleteSample() {
-    Log.v("", "[reallyDeleteSample()] Really deleting the sample.");
-    tabgroup = getSampleTypePath();
-    deleteArchEnt(currentSampleUUID, new DeleteCallback() {
-        onDelete(uuid) {
-            cancelTabGroup(tabgroup, false);
-        }
-    });
 }
 
 updateGPSStatus() {
