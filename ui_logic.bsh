@@ -5,6 +5,7 @@ import android.util.Log;
 User user; // don't touch
 String userid;
 String username;
+entity_id = null;
 
 makeLocalID(){
     fetchOne("CREATE TABLE IF NOT EXISTS localSettings (key text primary key, value text);");
@@ -123,22 +124,9 @@ addActionBarItem("external_gps", new ToggleActionButtonCallback() {
 
 
 
-entity_id = null;
-saveEntity() {
-    enable_autosave = true;
-    saveTabGroup("bettong", entity_id, null, null, new SaveCallback() {
-    onSave(uuid, newRecord) {
-            entity_id = uuid;
-            if(newRecord) {
-                showToast("{New_Record_Created}");
-            }
-        }
-    },
-    enable_autosave);
-}
-
-createSite() {
+createAndPopulateSite() {
     entity_id = null;
+    saveSite();
 
     siteCode   = getFieldValue("Project/Main/Site_Code");
     siteNumber = getFieldValue("Project/Main/Site_Number");
@@ -181,12 +169,11 @@ loadSiteStartingID() {
     });
 }
 
-createEntityAndPopulateMain() {
-    entity_id = null;
+populateMain() {
     //newTabGroup("bettong");
     setFieldValue("Project/Main/Author", username);
-
-    //take autonumbering from csiro, make sure to support localsettings preservation of ID. 
+    loadSiteStartingID(); //take autonumbering from csiro, make sure to support localsettings preservation of ID. 
+    updateGPSStatus();
 }
 
 setTimestamp(String path) {
@@ -196,24 +183,6 @@ setTimestamp(String path) {
 loadEntityAndPopulateBettong() {
     entity_id = getListItemValue();
     showTabGroup("bettong", entity_id);
-}
-
-getGpsCoordinates() {
-    location = getGPSPosition();
-    if (!isExternalGPSOn() && !isInternalGPSOn()) {
-        showWarning("{Err_Loc}", "{Err_Con}");
-        return;
-    }
-    if (location == null){
-        showWarning("{Err_Loc}", "{Err_Sig}");
-        return;
-    }
-
-    lat = location.getLatitude();
-    lon = location.getLongitude();
-    tabgroup = "bettong/approachAndRemoval/";
-    setFieldValue(tabgroup + "latitude",  lat);
-    setFieldValue(tabgroup + "longitude", lon);
 }
 
 fillInGPS() {
@@ -371,10 +340,9 @@ updateGPSStatus() {
     setFieldValue("Project/Main/GPS_Diagnostics", status);
 }
 
-entity_id = null;
-saveEntity() {
+saveSite() {
     enable_autosave = true;
-    saveTabGroup("bettong", entity_id, null, null, new SaveCallback() {
+    saveTabGroup("Site", entity_id, null, null, new SaveCallback() {
     onSave(uuid, newRecord) {
             entity_id = uuid;
             if(newRecord) {
@@ -411,9 +379,20 @@ makeVocab(String type, String path, String attrib){
         });
 }
 
+loadSites() {
+    type = "Site";
+    populateCursorList(
+            "Project/Records/All_Site_Records",
+            "select uuid, response from latestNonDeletedArchEntFormattedIdentifiers where aenttypename like '%" + type + "%' limit ? offset ?;",
+            25);
+}
+
+loadSite() {
+    entity_id = getListItemValue();
+    showTabGroup("Site", entity_id);
+}
+
 // These should go in functions so we can see what's populating what.
-
-
 makeVocab("CheckBoxGroup" , "Site/Site_Recording/Cultural_Material_Present" , "Cultural_Material_Present");
 makeVocab("CheckBoxGroup" , "Site/Site_Recording/Sketches"                  , "Sketches");
 makeVocab("DropDown"      , "Site/Site_Recording/Current_Land_Use"          , "Current_Land_Use");
@@ -425,18 +404,18 @@ makeVocab("DropDown"      , "Site/Site_Recording/Site_Type"                 , "S
 makeVocab("DropDown"      , "Site/Site_Recording/Surface_Geomorphology"     , "Surface_Geomorphology");
 makeVocab("DropDown"      , "Site/Site_Recording/Vegetation"                , "Vegetation");
 makeVocab("RadioGroup"    , "Site/Site_Recording/Site_Significance"         , "Site_Significance");
-populateHierarchicalDropDown("Site/Measurements/Measurement_Type", "Measurement_Type");
+populateHierarchicalDropDown("Site/Measurements/Measurement_Type"           , "Measurement_Type");
 
 startInternalGPS();
 setSyncEnabled(true);
-// onEvent("bettong/approachAndRemoval/takeFromGps", "click", "getGpsCoordinates()");
 // onEvent("control/control/", "show", "populateControlTabGroup()");
 // onEvent("control/control/buttonNewRecord",  "click", "createEntityAndPopulateBettong()");
 // onEvent("control/control/savedRecords", "click", "loadEntityAndPopulateBettong()");
-onEvent("Project/Main"                        , "show"  , "updateGPSStatus(); addSampleNavigation(); createEntityAndPopulateMain(); loadSiteStartingID(); ");
-onEvent("Project/Main/Record_Site"            , "click" , "showTabGroup(\"Site\")");
-onEvent("Site"                                , "show"  , "createSite()");
+onEvent("Project/Main"                        , "show"  , "addSampleNavigation(); populateMain(); loadSites(); ");
+onEvent("Project/Main/Record_Site"            , "click" , "showTabGroup(\"Site\"); createAndPopulateSite(); ");
 onEvent("Site/Photolog/Record_External_Photo" , "click" , "showTabGroup(\"Photolog\")");
 onEvent("Site/Site_Recording/Take_From_GPS"   , "click" , "fillInGPS()");
 onEvent("Users/Login"                         , "show"  , "loadUsers()");
 onEvent("Users/Login/Author_List"             , "click" , "login()");
+
+onEvent("Project/Records/All_Site_Records"    , "click" , "loadSite();");

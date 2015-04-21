@@ -87,13 +87,21 @@
                 </Col_Group_32>
               </Col_Group_3>
               <Col_Group_4>
-                <Northing/>
-                <Easting/>
+                <Col_Group_41>
+                  <Northing/>
+                </Col_Group_41>
+                <Col_Group_42>
+                  <Easting/>
+                </Col_Group_42>
               </Col_Group_4>
               <Take_From_GPS/>
               <Col_Group_5>
-                <Accuracy/>
-                <Heading/>
+                <Col_Group_51>
+                  <Accuracy/>
+                </Col_Group_51>
+                <Col_Group_52>
+                  <Heading/>
+                </Col_Group_52>
               </Col_Group_5>
               <Elevation_Absolute/>
               <Elevation_Range/>
@@ -115,8 +123,14 @@
               <Attach_A_Sketch/>
             </Site_Recording>
             <Measurements>
-              <Measurement_Type/>
-              <Measurement_Field/>
+              <Col_Group_6>
+                <Col_Group_61>
+                  <Measurement_Type/>
+                </Col_Group_61>
+                <Col_Group_62>
+                  <Measurement_Field/>
+                </Col_Group_62>
+              </Col_Group_6>
               <Add_A_Measurement/>
               <List_Of_Measurements/>
             </Measurements>
@@ -135,7 +149,6 @@
         </faims>
       </instance>
       <!-- Insert nodeset bindings here -->
-      <!-- TODO: make this binding work: -->
       <bind type="decimal" nodeset="/faims/Project/Main/Col_Group_1/Col_Group_11/Site_Number"/>
     </model>
   </h:head>
@@ -238,7 +251,7 @@
         </group>
       </group>
     </group>
-    <group ref="Site">
+    <group ref="Site" faims_archent_type="Site">
       <label>{Site}</label>
       <group ref="Site_Recording">
         <label>{Site_Recording}</label>
@@ -304,26 +317,38 @@
             </input>
           </group>
         </group>
-        <group ref="Col_Group_4">
+        <group ref="Col_Group_4" faims_style="orientation">
           <label></label>
-          <input ref="Northing" faims_attribute_name="Northing" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true" faims_read_only="true">
-            <label>{Northing}</label>
-          </input>
-          <input ref="Easting" faims_attribute_name="Easting" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true" faims_read_only="true">
-            <label>{Easting}</label>
-          </input>
+          <group ref="Col_Group_41" faims_style="even">
+            <label></label>
+            <input ref="Northing" faims_attribute_name="Northing" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true" faims_read_only="true">
+              <label>{Northing}</label>
+            </input>
+          </group>
+          <group ref="Col_Group_42" faims_style="even">
+            <label></label>
+            <input ref="Easting" faims_attribute_name="Easting" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true" faims_read_only="true">
+              <label>{Easting}</label>
+            </input>
+          </group>
         </group>
         <trigger ref="Take_From_GPS" faims_style_class="faims-blue">
           <label>{Take_From_GPS}</label>
         </trigger>
-        <group ref="Col_Group_5">
+        <group ref="Col_Group_5" faims_style="orientation">
           <label></label>
-          <input ref="Accuracy" faims_attribute_name="Accuracy" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true" faims_read_only="true">
-            <label>{Accuracy}</label>
-          </input>
-          <input ref="Heading" faims_attribute_name="Heading" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true" faims_read_only="true">
-            <label>{Heading}</label>
-          </input>
+          <group ref="Col_Group_51" faims_style="even">
+            <label></label>
+            <input ref="Accuracy" faims_attribute_name="Accuracy" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true" faims_read_only="true">
+              <label>{Accuracy}</label>
+            </input>
+          </group>
+          <group ref="Col_Group_52" faims_style="even">
+            <label></label>
+            <input ref="Heading" faims_attribute_name="Heading" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true" faims_read_only="true">
+              <label>{Heading}</label>
+            </input>
+          </group>
         </group>
         <input ref="Elevation_Absolute" faims_attribute_name="Elevation_Absolute" faims_attribute_type="freetext" faims_certainty="true" faims_annotation="true">
           <label>{Elevation_Absolute}</label>
@@ -418,16 +443,25 @@
       </group>
       <group ref="Measurements">
         <label>{Measurements}</label>
-        <select1 ref="Measurement_Type" faims_attribute_name="Measurement_Type" faims_attribute_type="vocab">
-          <label>{Measurement_Type}</label>
-          <item>
-            <label>placeholder</label>
-            <value>placeholder</value>
-          </item>
-        </select1>
-        <input ref="Measurement_Field" faims_attribute_name="Measurement_Field" faims_attribute_type="freetext">
-          <label>{Measurement}</label>
-        </input>
+        <group ref="Col_Group_6" faims_style="orientation">
+          <label></label>
+          <group ref="Col_Group_61" faims_style="even">
+            <label></label>
+            <select1 ref="Measurement_Type" faims_attribute_type="vocab">
+              <label>{Measurement_Type}</label>
+              <item>
+                <label>placeholder</label>
+                <value>placeholder</value>
+              </item>
+            </select1>
+          </group>
+          <group ref="Col_Group_62" faims_style="even">
+            <label></label>
+            <input ref="Measurement_Field" faims_attribute_type="freetext">
+              <label>{Measurement}</label>
+            </input>
+          </group>
+        </group>
         <trigger ref="Add_A_Measurement" faims_style_class="faims-blue">
           <label>{Add_A_Measurement}</label>
         </trigger>
