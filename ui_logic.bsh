@@ -424,6 +424,11 @@ loadRelatedPhotologs(String related_sample_id) {
 }
 
 
+newPhotolog() {
+    // ~~Magic~~
+}
+
+
 
 
 
