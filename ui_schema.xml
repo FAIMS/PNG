@@ -487,7 +487,7 @@
         </select1>
       </group>
     </group>
-    <group ref="Photolog">
+    <group ref="Photolog" faims_archent_type="External_Photo">
       <label>{Photolog}</label>
       <group ref="Photolog">
         <label>{Photolog}</label>
