@@ -33,7 +33,7 @@ login() {
     fetchOne("SELECT userid,fname,lname,email FROM user where userid='" + userid + "';", new FetchCallback() {
         onFetch(result) {
             user = new User(result.get(0),result.get(1),result.get(2),result.get(3));
-            setUser(user); 
+            setUser(user);
             username = result.get(1) + " " + result.get(2);
             showTabGroup("Project");
         }
@@ -412,7 +412,7 @@ setSyncEnabled(true);
 // onEvent("control/control/buttonNewRecord",  "click", "createEntityAndPopulateBettong()");
 // onEvent("control/control/savedRecords", "click", "loadEntityAndPopulateBettong()");
 onEvent("Project/Main"                        , "show"  , "addSampleNavigation(); populateMain(); loadSites(); ");
-onEvent("Project/Main/Record_Site"            , "click" , "showTabGroup(\"Site\"); createAndPopulateSite(); ");
+onEvent("Project/Main/Record_Site"            , "click" , "newTabGroup(\"Site\"); createAndPopulateSite(); ");
 onEvent("Site/Photolog/Record_External_Photo" , "click" , "showTabGroup(\"Photolog\")");
 onEvent("Site/Site_Recording/Take_From_GPS"   , "click" , "fillInGPS()");
 onEvent("Users/Login"                         , "show"  , "loadUsers()");
