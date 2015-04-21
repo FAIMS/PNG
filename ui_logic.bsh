@@ -126,7 +126,7 @@ addActionBarItem("external_gps", new ToggleActionButtonCallback() {
 
 createAndPopulateSite() {
     entity_id = null;
-    saveSite();
+    newTabGroup("Site");
 
     siteCode   = getFieldValue("Project/Main/Site_Code");
     siteNumber = getFieldValue("Project/Main/Site_Number");
@@ -136,7 +136,7 @@ createAndPopulateSite() {
     setFieldValue("Site/Site_Recording/Site_Number" , siteNumber);
     setFieldValue("Site/Site_Recording/Team"        , team);
     setTimestamp( "Site/Site_Recording/Created_At");
-
+   
     //take autonumbering from csiro, make sure to support localsettings preservation of ID. 
     setSiteStartingID(Integer.toString(Integer.parseInt(siteNumber) + 1));
 }
@@ -337,12 +337,14 @@ updateGPSStatus() {
 
 saveSite() {
     enable_autosave = true;
+    //keepTabGroupChanges("Site");
     saveTabGroup("Site", entity_id, null, null, new SaveCallback() {
     onSave(uuid, newRecord) {
             entity_id = uuid;
             if(newRecord) {
                 showToast("{New_Record_Created}");
             }
+            Log.d("saveSite", "saving");
         }
     },
     enable_autosave);
@@ -454,7 +456,8 @@ setSyncEnabled(true);
 // onEvent("control/control/buttonNewRecord",  "click", "createEntityAndPopulateBettong()");
 // onEvent("control/control/savedRecords", "click", "loadEntityAndPopulateBettong()");
 onEvent("Project/Main"                        , "show"  , "addSampleNavigation(); populateMain(); loadSites(); ");
-onEvent("Project/Main/Record_Site"            , "click" , "newTabGroup(\"Site\"); createAndPopulateSite(); ");
+onEvent("Project/Main/Record_Site"            , "click" , "createAndPopulateSite(); ");
+onEvent("Site"                                , "show"  , "saveSite()");
 onEvent("Site/Photolog/Record_External_Photo" , "click" , "showTabGroup(\"Photolog\")");
 onEvent("Site/Site_Recording/Take_From_GPS"   , "click" , "fillInGPS()");
 onEvent("Users/Login"                         , "show"  , "loadUsers()");
