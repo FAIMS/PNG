@@ -2,10 +2,11 @@
 import java.util.concurrent.Callable;
 import android.util.Log;
 
-User user; // don't touch
+User user;
 String userid;
 String username;
 entity_id = null;
+photolog_id = null;
 
 makeLocalID(){
     fetchOne("CREATE TABLE IF NOT EXISTS localSettings (key text primary key, value text);");
@@ -426,12 +427,39 @@ loadRelatedPhotologs(String related_sample_id) {
 }
 
 
+/* Make a new log, somewhere in the forest, which has a knack for taking pictures */
 newPhotolog() {
-    // ~~Magic~~
+    newTabGroup("Photolog");
+    photolog_id = null;
+    setTimestamp("Photolog/Photolog/Timestamp");
 }
 
+savePhotolog() {
+    if(!isNull(photolog_id) || isNull(getFieldValue("Photolog/Photolog/ID"))) return;
 
+    enable_autosave = true;
+    saveTabGroup("Photolog", photolog_id, null, null, new SaveCallback() {
+        onSave(uuid, newRecord) {
+            photolog_id = uuid;
+            saveEntitiesToRel("Site-External_Photo", entity_id, photolog_id);
+            saveTabGroup("Photolog", photolog_id, null, null, new SaveCallback() {
+                onSave(uuid, newRecord) {
+                    photolog_id = uuid;
+                }
+            }, enable_autosave);
+        }
+    });
+}
 
+saveEntitiesToRel(String type, String entity1, String entity2) {
+    if (isNull(entity1) || isNull(entity2)) return;
+    saveRel(null, type, null, null, new SaveCallback() {
+        onSave(rel_id, newRecord) {
+            addReln(entity1, rel_id, null);
+            addReln(entity2, rel_id, null);
+        }
+    });
+}
 
 
 
@@ -464,4 +492,7 @@ onEvent("Users/Login"                         , "show"  , "loadUsers()");
 onEvent("Users/Login/Author_List"             , "click" , "login()");
 
 onEvent("Project/Records/All_Site_Records"    , "click" , "loadSite();");
+
 onEvent("Site/Photolog"                       , "show"  , "loadRelatedPhotologs(entity_id)");
+onEvent("Site/Photolog/Record_External_Photo" , "click" , "newPhotolog()");
+onFocus("Photolog/Photolog/ID"                , null    , "savePhotolog()");
