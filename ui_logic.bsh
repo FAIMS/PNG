@@ -392,6 +392,160 @@ loadSite() {
     showTabGroup("Site", entity_id);
 }
 
+
+/* ************************************************************************** */
+/*** pH/Eh ***/
+
+ph_count = 0;
+preferred_ph = null;
+
+onEvent("Water_Sample/pH_Eh", "show", "renderpHEhPage();");
+
+/*********************************************************************************\
+ *                                                                               *
+ * WARNING: Do NOT re-use the following renderpHEhPage() code in future modules. *
+ *                                                                               *
+\*********************************************************************************/
+
+/* Renders the pH/Eh tab using dynamic UI. */
+renderpHEhPage() {
+    executeViewTask(new ViewTask() {
+        doTask() {
+            removeAllViewsAndContainers("Water_Sample");
+            style1 = "orientation";
+            style2 = "even";
+            createContainer("Water_Sample/pH_Eh/container3", "orientation");
+            createContainer("Water_Sample/pH_Eh/child1", "even", "Water_Sample/pH_Eh/container3");
+            createContainer("Water_Sample/pH_Eh/pH_Container", "even", "Water_Sample/pH_Eh/child1");
+
+            createContainer("Water_Sample/pH_Eh/child2", "even", "Water_Sample/pH_Eh/container3");
+            createContainer("Water_Sample/pH_Eh/Eh_Container", "even", "Water_Sample/pH_Eh/child2");
+            
+            ph_count = 0;
+            ArrayList ph_list = new ArrayList();
+            fetchAll("select uuid, group_concat(measure,'|') " +
+                    "from ( " +
+                    "select uuid, measure, attributename, aentcountorder " +
+                    "from latestnondeletedaentvalue " +
+                    "join latestnondeletedarchent using (uuid) " +
+                    "join aenttype using (aenttypeid) " +
+                    "join idealaent using (aenttypeid, attributeid) " +
+                    "join attributekey using (attributeid)  " +
+                    "where aenttypename = 'pH' " +
+                    "and attributename in ('pH', 'Time') " +
+                    "and uuid in (select a.uuid " +
+                    "from latestnondeletedaentreln a join latestnondeletedaentreln b using (relationshipid) " +
+                    "where a.uuid != b.uuid " +
+                    "and b.uuid = "+ currentSampleUUID +") " +
+                    "order by uuid, aentcountorder) " +
+                    "group by uuid  " +
+                    "order by uuid; ", new FetchCallback() {
+                    onFetch(ph_list) {
+                        print("[renderpHEhPage()] ph list: " + ph_list);
+                        fetchAll("select uuid, group_concat(measure,'|') " +
+                                "from ( " +
+                                "select uuid, measure, attributename, aentcountorder " +
+                                "from latestnondeletedaentvalue " +
+                                "join latestnondeletedarchent using (uuid) " +
+                                "join aenttype using (aenttypeid) " +
+                                "join idealaent using (aenttypeid, attributeid) " +
+                                "join attributekey using (attributeid)  " +
+                                "where aenttypename = 'Eh' " +
+                                "and attributename in ('Eh', 'Time') " +
+                                "and uuid in (select a.uuid " +
+                                "from latestnondeletedaentreln a join latestnondeletedaentreln b using (relationshipid) " +
+                                "where a.uuid != b.uuid " +
+                                "and b.uuid = "+ currentSampleUUID +") " +
+                                "order by uuid, aentcountorder) " +
+                                "group by uuid " +
+                                "order by uuid, aentcountorder; ",  new FetchCallback() {
+                            onError(message) {
+                                showToast(message);
+                            }
+                        });
+                    }
+                    onError(message) {
+                        showToast(message);
+                    }
+                });
+        }
+    });
+}
+
+/********************************************************************************\
+ *                                                                              *
+ * WARNING: Do NOT re-use the previous renderpHEhPage() code in future modules. *
+ *                                                                              *
+\********************************************************************************/
+
+/* Adds a new pH value, saves the entity and updates the dynamic UI. */
+addNewpH(String ph_value) {
+    if(isNull(ph_value)) {
+        showToast("{Please_Fill_In_PH}");
+        return;
+    }
+    List attributes = createAttributeList();
+    ph_time = new java.text.SimpleDateFormat("d-MMM-yy HH:mm:ss z").format(new Date());
+    attributes.add(createEntityAttribute("pH", null, null, ph_value, null));
+    attributes.add(createEntityAttribute("Time", null, null, ph_time, null));
+
+    saveArchEnt(null, "pH", null, attributes, new SaveCallback() {
+        onSave(ph_id, newRecord) {
+            saveEntitiesToRel("Water Sample pH", currentSampleUUID, ph_id);
+            removeView("Water_Sample/pH_Eh/pH_Value_" + ph_count);
+            removeView("Water_Sample/pH_Eh/New_pH");
+
+            createContainer("Water_Sample/pH_Eh/pH_Row_" + ph_count, "orientation", "Water_Sample/pH_Eh/pH_Container");
+            createContainer("Water_Sample/pH_Eh/Check_pH_Container_" + ph_count, "even", "Water_Sample/pH_Eh/pH_Row_" + ph_count);
+            createContainer("Water_Sample/pH_Eh/pH_Value_Container_" + ph_count, "even", "Water_Sample/pH_Eh/pH_Row_" + ph_count);
+            createContainer("Water_Sample/pH_Eh/Delete_pH_Container_" + ph_count, "even", "Water_Sample/pH_Eh/pH_Row_" + ph_count);
+            createView("Water_Sample/pH_Eh/Check_pH_" + ph_count, createViewDef().createRadioGroup().addChoice("", ""), "Water_Sample/pH_Eh/Check_pH_Container_" + ph_count);
+            createView("Water_Sample/pH_Eh/pH_Value_" + ph_count, createViewDef().createTextField("decimal").setReadOnly(true), "Water_Sample/pH_Eh/pH_Value_Container_" + ph_count);
+            createView("Water_Sample/pH_Eh/Delete_pH_" + ph_count, createViewDef().createButton().setLabel("X").setStyleCss("faims-danger"), "Water_Sample/pH_Eh/Delete_pH_Container_" + ph_count);
+            setFieldValue("Water_Sample/pH_Eh/pH_Value_" + ph_count, ph_value);
+
+            int index = ph_count;
+            onEvent("Water_Sample/pH_Eh/Check_pH_" + ph_count, "click", "setPreferredpH(\"" + ph_id + "\", \"" + ph_value + "\", \"" + ph_time + "\", " + ph_count + ");");
+            onEvent("Water_Sample/pH_Eh/Delete_pH_" + ph_count, "click", "deletepH(\"" + ph_id + "\");");
+            ph_count++;
+
+            createView("Water_Sample/pH_Eh/pH_Value_" + ph_count, createViewDef().createTextField("decimal").setAttributeType("measure").setLabel("{pH}"), "Water_Sample/pH_Eh/child1");
+            createView("Water_Sample/pH_Eh/New_pH", createViewDef().createButton().setLabel("{Add_New_pH}"), "Water_Sample/pH_Eh/child1");
+            onEvent("Water_Sample/pH_Eh/New_pH", "delayclick", "addNewpH(getFieldValue(\"Water_Sample/pH_Eh/pH_Value_\" + ph_count));");
+            refreshTabgroupCSS("Water_Sample");
+        }
+    });
+}
+
+/* Generates a confirmation prompt to delete the given pH. */
+deletepH(String ph_id) {
+    showAlert("{Confirm_Deletion}", "{Press_To_Delete} {pH}!", "reallyDeletepH(\"" + ph_id + "\")", "doNotDelete()");
+}
+
+/* Deletes the given pH. */
+reallyDeletepH(String ph_id) {
+    deleteArchEnt(ph_id, new DeleteCallback() {
+        onDelete(uuid) {
+            if(ph_id == preferred_ph) {
+                preferred_ph = null;
+                setFieldValue("Water_Sample/pH_Eh/Preferred_pH", "");
+                setFieldValue("Water_Sample/pH_Eh/Preferred_pH_Time", "");
+                setFieldValue("Water_Sample/Hidden/Preferred_pH_Time", "");
+            }
+            showTab("Water_Sample/Codes");
+            showTab("Water_Sample/pH_Eh");
+        }
+    });
+}
+
+
+
+
+
+
+
+
+
 // These should go in functions so we can see what's populating what.
 makeVocab("CheckBoxGroup" , "Site/Site_Recording/Cultural_Material_Present" , "Cultural_Material_Present");
 makeVocab("CheckBoxGroup" , "Site/Site_Recording/Sketches"                  , "Sketches");

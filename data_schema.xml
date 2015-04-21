@@ -6,6 +6,13 @@
     $4 => Certainty?
 -->
 <dataSchema>
+  <RelationshipElement name="Site-Measurement" type="bidirectional">
+    <description>Implements a 1:N relationship between Site and Measurement</description>
+  </RelationshipElement>
+  <RelationshipElement name="Site-External_Photo" type="bidirectional">
+    <description>Implements a 1:N relationship between Site and External_Photo (entities in Photolog)</description>
+  </RelationshipElement>
+
   <ArchaeologicalElement name="Site">
     <description></description>
     <property name="Site_Code" type="freetext" isIdentifier="true">
