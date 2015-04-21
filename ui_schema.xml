@@ -215,7 +215,7 @@
       </group>
       <group ref="Records">
         <label>{Records}</label>
-        <select1 ref="All_Site_Records" appearance="compact">
+        <select1 ref="All_Site_Records" appearance="compact" faims_style_class="record_list">
           <label>{All_Site_Records}</label>
           <item>
             <label>No Records Yet</label>
@@ -270,10 +270,10 @@
             </input>
           </group>
         </group>
-        <input ref="Created_At" faims_read_only="true" faims_annotation="false">
+        <input ref="Created_At" faims_attribute_name="Created_At" faims_attribute_type="measure" faims_read_only="true" faims_annotation="false">
           <label>{Created_At}</label>
         </input>
-        <input ref="Author" faims_read_only="true" faims_annotation="false">
+        <input ref="Author" faims_attribute_name="Author" faims_attribute_type="measure" faims_read_only="true" faims_annotation="false">
           <label>{Author}</label>
         </input>
         <input ref="Team" faims_attribute_name="Team" faims_attribute_type="measure" faims_read_only="true" faims_annotation="false">
