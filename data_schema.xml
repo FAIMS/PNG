@@ -306,7 +306,7 @@
   </ArchaeologicalElement>
   <ArchaeologicalElement name="Measurement">
     <description></description>
-    <property name="Measurement_Type" type="enum">
+    <property name="Measurement_Type" type="enum" isIdentifier="true">
       <description/>
       <lookup>
         <term> {Ethnographic_Site}
@@ -558,13 +558,13 @@
         </term>
       </lookup>
     </property>
-    <property name="Measurement_Field" type="freetext">
+    <property name="Measurement_Field" type="freetext" isIdentifier="true">
       <description/>
     </property>
   </ArchaeologicalElement>
   <ArchaeologicalElement name="External_Photo">
     <description/>
-    <property name="ID" type="freetext"> <description/> </property>
+    <property name="ID" type="freetext" isIdentifier="true"> <description/> </property>
     <property name="Timestamp" type="freetext"> <description/> </property>
     <property name="Note" type="freetext"> <description/> </property>
   </ArchaeologicalElement>
