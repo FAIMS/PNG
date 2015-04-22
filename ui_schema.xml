@@ -144,6 +144,7 @@
               <ID/>
               <Timestamp/>
               <Note/>
+              <Photo_Back/>
             </Photolog>
           </Photolog>
         </faims>
@@ -500,6 +501,9 @@
         <input ref="Note" faims_attribute_name="Note" faims_attribute_type="measure" faims_certainty="true">
           <label>{Photo_Note}</label>
         </input>
+        <trigger ref="Photo_Back" faims_style_class="faims-blue">
+          <label>{Back}</label>
+        </trigger>
       </group>
     </group>
   </h:body>

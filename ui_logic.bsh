@@ -451,6 +451,95 @@ savePhotolog() {
     });
 }
 
+/******************************************************************************/
+
+onEvent("Photolog", "show", "addPhotologNavigation();");
+onFocus("Photolog/Photolog/ID", null, "activateAutoSavePhotolog();");
+onEvent("Photolog/Photolog/Photo_Back", "click", "cancelTabGroup(\"Photolog\", false); showTab(\"Site/Photolog\");");
+
+onEvent("Site/Photolog/List_Of_External_Photos", "click", "loadPhotolog();");
+
+/* Loads a photolog based on the most recent list item selected. */
+loadPhotolog() {
+    photolog_id = getListItemValue();
+    print("[loadPhotolog()] photolog list item value null status: " + isNull(photolog_id));
+    print("[loadPhotolog()] Using photolog list item value as photolog_id: " + photolog_id);
+    if (!isNull(photolog_id)) {
+        loadPhotologFrom(photolog_id);
+    }
+}
+
+/* Loads a photolog based on the given ID. */
+loadPhotologFrom(archentid) {
+    if (isNull(archentid)) {
+        showToast("{No_Photolog_Selected}");
+        return;
+    }
+
+    enable_autosave = true;
+    showTabGroup("Photolog", archentid, new FetchCallback() {
+        onFetch(result) {
+            photolog_id = archentid;
+            saveTabGroup("Photolog", photolog_id, null, null, new SaveCallback() {
+                onSave(uuid, newRecord) {
+                    photolog_id = uuid;
+                }
+            }, enable_autosave);
+        }
+    });
+}
+
+
+
+/* Generates a confirmation to delete the current photolog */
+deletePhotolog() {
+    if (!isNull(photolog_id)) {
+        showAlert("{Confirm_Deletion}", "{Press_To_Delete} {Photolog}!", "reallyDeletePhotolog()", "doNotDelete()");
+    } else {
+        cancelTabGroup("Photolog", true);
+    }
+}
+
+/* Deletes the current photolog. */
+reallyDeletePhotolog() {
+    deleteArchEnt(photolog_id, new DeleteCallback() {
+        onDelete(uuid) {
+            cancelTabGroup("Photolog", false);
+            showTab("Site/Photolog");
+        }
+    });
+}
+
+/* Creates sidebar navigation buttons for the photolog. */
+addPhotologNavigation() {
+    removeNavigationButton("new");
+    removeNavigationButton("delete");
+
+    addNavigationButton("new", new ActionButtonCallback() {
+        actionOnLabel() {
+            "{New_Photolog}";
+        }
+        actionOn() {
+            if(!isNull(photolog_id)) {
+                newPhotolog();
+            } else {
+                showAlert("{Warning}", "{Lose_Unsaved_Changes}!", "newPhotolog()", "");
+            }
+        }
+    }, "success");
+
+    addNavigationButton("delete", new ActionButtonCallback() {
+        actionOnLabel() {
+            "{Delete_Photolog}";
+        }
+        actionOn() {
+            deletePhotolog();
+        }
+    }, "danger");
+}
+
+/******************************************************************************/
+
 saveEntitiesToRel(String type, String entity1, String entity2) {
     if (isNull(entity1) || isNull(entity2)) return;
     saveRel(null, type, null, null, new SaveCallback() {
