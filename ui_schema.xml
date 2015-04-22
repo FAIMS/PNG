@@ -478,7 +478,7 @@
         <trigger ref="Record_External_Photo" faims_attribute_name="Record_External_Photo" faims_style_class="faims-blue">
           <label>{Record_External_Photo}</label>
         </trigger>
-        <select1 ref="List_Of_External_Photos" appearance="compact">
+        <select1 ref="List_Of_External_Photos" appearance="compact" faims_style_class="record_list">
           <label>{List_Of_External_Photos}</label>
           <item>
             <label>placeholder</label>
