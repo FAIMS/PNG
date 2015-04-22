@@ -492,10 +492,10 @@
       <label>{Photolog}</label>
       <group ref="Photolog">
         <label>{Photolog}</label>
-        <input ref="ID" faims_attribute_name="ID" faims_attribute_type="measure">
+        <input ref="ID" faims_attribute_name="ID" faims_attribute_type="measure" faims_annotation="false" faims_certainty="false">
           <label>{Photo_ID}</label>
         </input>
-        <input ref="Timestamp" faims_attribute_name="Timestamp" faims_attribute_type="measure">
+        <input ref="Timestamp" faims_attribute_name="Timestamp" faims_attribute_type="measure" faims_annotation="false" faims_certainty="false">
           <label>{Photo_Timestamp}</label>
         </input>
         <input ref="Note" faims_attribute_name="Note" faims_attribute_type="measure" faims_certainty="true">
