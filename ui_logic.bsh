@@ -1,3 +1,6 @@
+// TODO: Sites should be save immediately after creation, else measurements will
+//       not be saved properly.
+
 /*** 'Editable' - you can edit the code below based on the needs ***/
 import java.util.concurrent.Callable;
 import android.util.Log;
@@ -206,22 +209,6 @@ fillInGPS() {
     setFieldValue(tab + "Easting"   , eas);
     setFieldValue(tab + "Accuracy"  , nor);
     setFieldValue(tab + "Heading"   , hea);
-}
-
-String getSampleTypePath() {
-    String tabgroup = null;
-    String type = getSampleType();
-    if(type.equals("Water Sample")) {
-        tabgroup = "Water_Sample";
-    } else if(type.equals("Plant Sample")) {
-        tabgroup = "Plant_Sample";
-    } else if(type.equals("Soil Sample")) {
-        tabgroup = "Soil_Sample";
-    } else if(type.equals("Rock Sample")) {
-        tabgroup = "Rock_Sample";
-    }
-    Log.d("", "[getSampleTypePath()] Tabgroup is: " + tabgroup);
-    return tabgroup;
 }
 
 /* Creates sidebar navigation for the sample. */
@@ -452,6 +439,8 @@ savePhotolog() {
 }
 
 /******************************************************************************/
+/*                                  PHOTOLOG                                  */
+/******************************************************************************/
 
 onEvent("Photolog", "show", "addPhotologNavigation();");
 onFocus("Photolog/Photolog/ID", null, "activateAutoSavePhotolog();");
@@ -538,6 +527,153 @@ addPhotologNavigation() {
     }, "danger");
 }
 
+/******************************************************************************/
+/*                                MEASUREMENTS                                */
+/******************************************************************************/
+
+ph_count = 0;
+preferred_ph = null;
+
+onEvent("Site/Measurements", "show", "renderpHEhPage();");
+
+/* Renders the pH/Eh tab using dynamic UI. */
+renderpHEhPage() {
+    executeViewTask(new ViewTask() {
+        doTask() {
+            o = "orientation";
+            e = "even";
+            removeAllViewsAndContainers("Site");
+            createContainer("Site/Measurements/container3"   , o);
+            createContainer("Site/Measurements/pH_Container" , e   , "Site/Measurements/container3");
+
+            ph_count = 0;
+            ArrayList ph_list = new ArrayList();
+
+            fetchAll("select uuid, response " +
+                     "from latestnondeletedarchentformattedidentifiers " +
+                     "where uuid in (select b.uuid " +
+                     "from latestnondeletedaentreln a " +
+                     "join (latestnondeletedaentreln b " +
+                     "join relationship using (relationshipid) " +
+                     "join relntype using (relntypeid)) on (a.uuid != b.uuid and a.relationshipid = b.relationshipid) " +
+                     "where relntypename='Site-Measurement' " +
+                     "and a.uuid = " + entity_id + "); ", new FetchCallback() {
+                        onFetch(ph_list) {
+                            //print(ph_list);
+
+                            for(ph : ph_list) {
+                                String ph_id    = ph.get(0);
+                                String ph_value = ph.get(1);
+                                makePhRow(
+                                    ph_id,
+                                    ph_value,
+                                    ph_count + "" // Implicit type conversion
+                                );
+                                ph_count++;
+                            }
+
+                            onEvent("Site/Measurements/Add_A_Measurement", "delayclick", "addNewpH();");
+                        }
+                        onError(message) {
+                            showToast(message);
+                        }
+
+                    });
+        }
+    });
+}
+
+/* Adds a new pH value, saves the entity and updates the dynamic UI. */
+addNewpH() {
+    measurementField    = getFieldValue("Site/Measurements/Measurement_Field");
+    measurementTypeId   = getFieldValue("Site/Measurements/Measurement_Type");
+    measurementTypeName = "";     // Gotta set this with the fetchOne call below
+    if(isNull(measurementField)) {
+        showToast("{Please_Fill_In_PH}");
+        return;
+    }
+
+    fetchOne("select vocabname from vocabulary where vocabid = " + measurementTypeId, new FetchCallback() {
+        onFetch(result) {
+            measurementTypeName = result.get(0);
+        }
+        onError(message) {
+            showToast(message);
+        }
+    });
+
+
+    List attributes = createAttributeList();
+    attributes.add(createEntityAttribute("Measurement_Type"  , null , measurementTypeId , null             , null));
+    attributes.add(createEntityAttribute("Measurement_Field" , null , null              , measurementField , null));
+
+    saveArchEnt(null, "Measurement", null, attributes, new SaveCallback() {
+        onSave(ph_id, newRecord) {
+            saveEntitiesToRel("Site-Measurement", entity_id, ph_id);
+
+            String ph_value = measurementTypeName + ": " + measurementField;
+            makePhRow(
+                ph_id,
+                ph_value,
+                ph_count + "" // Implicit type conversion
+            );
+            ph_count++;
+
+            onEvent("Site/Measurements/Add_A_Measurement", "delayclick", "addNewpH();");
+        }
+    });
+}
+
+makePhRow(String ph_id, String ph_value, String ph_count) {
+    o = "orientation";
+    e = "even";
+
+    tab    = "Site/Measurements/";
+    field  = createViewDef().createTextField("decimal").setReadOnly(true);
+    button = createViewDef().createButton().setLabel("X").setStyleCss("faims-danger");
+
+    createContainer(tab + "pH_Row_"              + ph_count , o      , tab + "pH_Container");
+    createContainer(tab + "pH_Value_Container_"  + ph_count , e      , tab + "pH_Row_"              + ph_count);
+    createContainer(tab + "Delete_pH_Container_" + ph_count , e      , tab + "pH_Row_"              + ph_count);
+    createView(     tab + "pH_Value_"            + ph_count , field  , tab + "pH_Value_Container_"  + ph_count);
+    createView(     tab + "Delete_pH_"           + ph_count , button , tab + "Delete_pH_Container_" + ph_count);
+
+    setFieldValue("Site/Measurements/pH_Value_" + ph_count, ph_value);
+    onEvent("Site/Measurements/Delete_pH_" + ph_count, "click", "deletepH(\"" + ph_id + "\", \"" + ph_count + "\");");
+
+    refreshTabgroupCSS("Site");
+}
+
+/* Generates a confirmation prompt to delete the given pH. */
+deletepH(String ph_id, String ph_index) {
+    showAlert(
+        "{Confirm_Deletion}",
+        "{Press_To_Delete} {pH}!",
+        "reallyDeletepH(\"" + ph_id + "\", \"" + ph_index + "\")",
+        "doNotDelete()"
+    );
+}
+
+/* Deletes the given pH. */
+reallyDeletepH(String ph_id, String ph_index) {
+    deleteArchEnt(ph_id, new DeleteCallback() {
+        onDelete(uuid) {
+            removeContainer("Site/Measurements/pH_Row_" + ph_index);
+            removeContainer("Site/Measurements/pH_Value_Container_" + ph_index);
+            removeContainer("Site/Measurements/Delete_pH_Container_" + ph_index);
+            removeView("Site/Measurements/pH_Value_" + ph_index);
+            removeView("Site/Measurements/Delete_pH_" + ph_index);
+            //showTab("Site/Measurements");
+        }
+    });
+}
+
+doNotDelete() {
+    showToast("{Delete_Cancelled}");
+}
+
+/******************************************************************************/
+/*                                    MISC                                    */
 /******************************************************************************/
 
 saveEntitiesToRel(String type, String entity1, String entity2) {
