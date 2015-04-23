@@ -559,8 +559,8 @@
       </lookup>
     </property>
     <property name="Measurement_Field" type="freetext" isIdentifier="true">
-      <formatString><![CDATA[$1: ]]></formatString>
       <description/>
+      <formatString><![CDATA[{{if $1 then "$1: "}}]]></formatString>
     </property>
   </ArchaeologicalElement>
   <ArchaeologicalElement name="External_Photo">
