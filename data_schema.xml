@@ -308,259 +308,129 @@
     <description></description>
     <property name="Measurement_Type" type="enum" isIdentifier="true">
       <description/>
+      <formatString><![CDATA[$1: ]]></formatString>
       <lookup>
         <term> {Ethnographic_Site}
           <description/>
-          <term> {Length} <description/> </term>
-          <term> {Width} <description/> </term>
-          <term> {Area} <description/> </term>
+          <term> {Ethnographic_Site} {Length}  <description/> </term>
+          <term> {Ethnographic_Site} {Width}   <description/> </term>
+          <term> {Ethnographic_Site} {Area}    <description/> </term>
         </term>
         <term> {Oral_Site}
           <description/>
-          <term> {Length} <description/> </term>
-          <term> {Width} <description/> </term>
-          <term> {Area} <description/> </term>
+          <term> {Oral_Site} {Length}  <description/> </term>
+          <term> {Oral_Site} {Width}   <description/> </term>
+          <term> {Oral_Site} {Area}    <description/> </term>
         </term>
         <term> {Ancestral_Site}
           <description/>
-          <term> {Length} <description/> </term>
-          <term> {Width} <description/> </term>
-          <term> {Area} <description/> </term>
+          <term> {Ancestral_Site} {Length}  <description/> </term>
+          <term> {Ancestral_Site} {Width}   <description/> </term>
+          <term> {Ancestral_Site} {Area}    <description/> </term>
         </term>
         <term> {Isolated_artefact}
           <description/>
-          <term> {N_A}
+          <term> {Isolated_artefact} {N_A}
             <description/>
           </term>
         </term>
         <term> {Isolated_feature}
           <description/>
-          <term> {Length} <description/> </term>
-          <term> {Width} <description/> </term>
-          <term> {Height} <description/> </term>
+          <term> {Isolated_feature} {Length}  <description/> </term>
+          <term> {Isolated_feature} {Width}   <description/> </term>
+          <term> {Isolated_feature} {Height}  <description/> </term>
         </term>
         <term> {Rockshelter}
           <description/>
-          <term> {Max_Depth}
-            <description>
-              Maximum depth of cave/rockshelter interior
-            </description>
-          </term>
-          <term> {Max_Width}
-            <description>
-              Maximum width of cave/rockshelter interior
-            </description>
-          </term>
-          <term> {Max_Height}
-            <description>
-              Maximum height inside cave/rockshelter interior
-            </description>
-          </term>
-          <term> {Entrance_Width}
-            <description>
-              Width of dripline or the defined entrance to the shelter
-            </description>
-          </term>
-          <term> {Entrance_Height}
-            <description>
-              Height of dripline or the defined entrance to the shelter
-            </description>
-          </term>
-          <term> {Terrace_Depth}
-            <description>
-              Length of flat area, if any, outside of the cave/rockshelter beyond the entrance/dripline
-            </description>
-          </term>
-          <term> {Terrace_Width}
-            <description>
-              Width of flat area, if any, outside of the cave/rockshelter beyond the entrance/dripline
-            </description>
-          </term>
-          <term> {Aspect}
-            <description>
-              The direction that the opening of the cave/rockshelter is facing
-            </description>
-          </term>
-          <term> {Area_of_Floor}
-            <description>
-              Estimate - maximum extent of usable cave/rockshelter, including where there is rockfall (as it may not have been there in the past)
-            </description>
-          </term>
-          <term> {Area_of_Deposit}
-            <description>
-              Estimate - maximum extent of sediment in cave/rockshelter, including where there is rockfall (as it may not have been there in the past)
-            </description>
-          </term>
+          <term> {Rockshelter} {Max_Depth}        <description> Maximum depth of cave/rockshelter interior </description> </term>
+          <term> {Rockshelter} {Max_Width}        <description> Maximum width of cave/rockshelter interior </description> </term>
+          <term> {Rockshelter} {Max_Height}       <description> Maximum height inside cave/rockshelter interior </description> </term>
+          <term> {Rockshelter} {Entrance_Width}   <description> Width of dripline or the defined entrance to the shelter </description> </term>
+          <term> {Rockshelter} {Entrance_Height}  <description> Height of dripline or the defined entrance to the shelter </description> </term>
+          <term> {Rockshelter} {Terrace_Depth}    <description> Length of flat area, if any, outside of the cave/rockshelter beyond the entrance/dripline </description> </term>
+          <term> {Rockshelter} {Terrace_Width}    <description> Width of flat area, if any, outside of the cave/rockshelter beyond the entrance/dripline </description> </term>
+          <term> {Rockshelter} {Aspect}           <description> The direction that the opening of the cave/rockshelter is facing </description> </term>
+          <term> {Rockshelter} {Area_of_Floor}    <description> Estimate - maximum extent of usable cave/rockshelter, including where there is rockfall (as it may not have been there in the past) </description> </term>
+          <term> {Rockshelter} {Area_of_Deposit}  <description> Estimate - maximum extent of sediment in cave/rockshelter, including where there is rockfall (as it may not have been there in the past) </description> </term>
         </term>
         <term> {Cave}
           <description/>
-          <term> {Max_Depth}
-            <description>
-              Maximum depth of cave/rockshelter interior
-            </description>
-          </term>
-          <term> {Max_Width}
-            <description>
-              Maximum width of cave/rockshelter interior
-            </description>
-          </term>
-          <term> {Max_Height}
-            <description>
-              Maximum height inside cave/rockshelter interior
-            </description>
-          </term>
-          <term> {Entrance_Width}
-            <description>
-              Width of dripline or the defined entrance to the shelter
-            </description>
-          </term>
-          <term> {Entrance_Height}
-            <description>
-              Height of dripline or the defined entrance to the shelter
-            </description>
-          </term>
-          <term> {Terrace_Depth}
-            <description>
-              Length of flat area, if any, outside of the cave/rockshelter beyond the entrance/dripline
-            </description>
-          </term>
-          <term> {Terrace_Width}
-            <description>
-              Width of flat area, if any, outside of the cave/rockshelter beyond the entrance/dripline
-            </description>
-          </term>
-          <term> {Aspect}
-            <description>
-              The direction that the opening of the cave/rockshelter is facing
-            </description>
-          </term>
-          <term> {Area_of_Floor}
-            <description>
-              Estimate - maximum extent of usable cave/rockshelter, including where there is rockfall (as it may not have been there in the past)
-            </description>
-          </term>
-          <term> {Area_of_Deposit}
-            <description>
-              Estimate - maximum extent of sediment in cave/rockshelter, including where there is rockfall (as it may not have been there in the past)
-            </description>
-          </term>
+          <term> {Cave} {Max_Depth}        <description> Maximum depth of cave/rockshelter interior </description> </term>
+          <term> {Cave} {Max_Width}        <description> Maximum width of cave/rockshelter interior </description> </term>
+          <term> {Cave} {Max_Height}       <description> Maximum height inside cave/rockshelter interior </description> </term>
+          <term> {Cave} {Entrance_Width}   <description> Width of dripline or the defined entrance to the shelter </description> </term>
+          <term> {Cave} {Entrance_Height}  <description> Height of dripline or the defined entrance to the shelter </description> </term>
+          <term> {Cave} {Terrace_Depth}    <description> Length of flat area, if any, outside of the cave/rockshelter beyond the entrance/dripline </description> </term>
+          <term> {Cave} {Terrace_Width}    <description> Width of flat area, if any, outside of the cave/rockshelter beyond the entrance/dripline </description> </term>
+          <term> {Cave} {Aspect}           <description> The direction that the opening of the cave/rockshelter is facing </description> </term>
+          <term> {Cave} {Area_of_Floor}    <description> Estimate - maximum extent of usable cave/rockshelter, including where there is rockfall (as it may not have been there in the past) </description> </term>
+          <term> {Cave} {Area_of_Deposit}  <description> Estimate - maximum extent of sediment in cave/rockshelter, including where there is rockfall (as it may not have been there in the past) </description> </term>
         </term>
 
         <term> {Artefact_scatter}
           <description/>
-          <term> {Length_of_Entire_Scatter}
-            <description/>
-          </term>
-          <term> {Width_of_Entire_Scatter}
-            <description/>
-          </term>
-          <term> {Length_of_Densest_Scatter_Area}
-            <description/>
-          </term>
-          <term> {Width_of_Densest_Scatter_Area}
-            <description/>
-          </term>
-          <term> {Estimated_Average_Density_Artefacts_per_Square_Metre}
-            <description/>
-          </term>
+          <term> {Artefact_scatter} {Length_of_Entire_Scatter}                              <description/> </term>
+          <term> {Artefact_scatter} {Width_of_Entire_Scatter}                               <description/> </term>
+          <term> {Artefact_scatter} {Length_of_Densest_Scatter_Area}                        <description/> </term>
+          <term> {Artefact_scatter} {Width_of_Densest_Scatter_Area}                         <description/> </term>
+          <term> {Artefact_scatter} {Estimated_Average_Density_Artefacts_per_Square_Metre}  <description/> </term>
         </term>
 
         <term> {Sub-surface_cultural_deposit}
           <description/>
-          <term> {Total_Depth_of_The_Cultural_Deposit}
-            <description/>
-          </term>
-          <term> {Depth_of_Each_Layer}
-            <description/>
-          </term>
-          <term> {Estimated_Length_of_Subsurface_Deposit}
-            <description/>
-          </term>
-          <term> {Estimated_Width_of_Subsurface_Deposit}
-            <description/>
-          </term>
+          <term> {Sub-surface_cultural_deposit} {Total_Depth_of_The_Cultural_Deposit}     <description/> </term>
+          <term> {Sub-surface_cultural_deposit} {Depth_of_Each_Layer}                     <description/> </term>
+          <term> {Sub-surface_cultural_deposit} {Estimated_Length_of_Subsurface_Deposit}  <description/> </term>
+          <term> {Sub-surface_cultural_deposit} {Estimated_Width_of_Subsurface_Deposit}   <description/> </term>
         </term>
 
         <term> {Midden}
           <description/>
-          <term> {Length_of_Midden}
-            <description/>
-          </term>
-          <term> {Width_of_Midden}
-            <description/>
-          </term>
+          <term> {Midden} {Length_of_Midden}  <description/> </term>
+          <term> {Midden} {Width_of_Midden}   <description/> </term>
         </term>
 
         <term> {Stone_arrangement_megalithic_structures}
           <description/>
-          <term> {Length_and_Direction_Degrees_of_Structure}
-            <description/>
-          </term>
-          <term> {Width_and_Direction_Degrees_of_Structure}
-            <description/>
-          </term>
+          <term> {Stone_arrangement_megalithic_structures} {Length_and_Direction_Degrees_of_Structure}  <description/> </term>
+          <term> {Stone_arrangement_megalithic_structures} {Width_and_Direction_Degrees_of_Structure}   <description/> </term>
         </term>
 
         <term> {Quarry}
           <description/>
-          <term> {Length}
-            <description/>
-          </term>
-          <term> {Width}
-            <description/>
-          </term>
-          <term> {Height}
-            <description/>
-          </term>
+          <term> {Quarry} {Length}  <description/> </term>
+          <term> {Quarry} {Width}   <description/> </term>
+          <term> {Quarry} {Height}  <description/> </term>
         </term>
-        
+
         <term> {Rockart}
           <description/>
-          <term> {Number_of_Art_Panels}
-            <description/>
-          </term>
-          <term> {Number_of_Motifs}
-            <description/>
-          </term>
-          <term> {Length_of_Each_Panel}
-            <description/>
-          </term>
-          <term> {Width_of_Each_Panel}
-            <description/>
-          </term>
+          <term> {Rockart} {Number_of_Art_Panels}  <description/> </term>
+          <term> {Rockart} {Number_of_Motifs}      <description/> </term>
+          <term> {Rockart} {Length_of_Each_Panel}  <description/> </term>
+          <term> {Rockart} {Width_of_Each_Panel}   <description/> </term>
         </term>
 
         <term> {Skeletal_deposit}
           <description/>
-          <term> {N_A}
-            <description/>
-          </term>
+          <term> {Skeletal_deposit} {N_A}  <description/> </term>
         </term>
 
         <term> {Terraces_land_modifications}
           <description/>
-          <term> {Length_and_Direction_Degrees_of_Terrace}
-            <description/>
-          </term>
-          <term> {Width_and_Direction_Degrees_of_Terrace}
-            <description/>
-          </term>
+          <term> {Terraces_land_modifications} {Length_and_Direction_Degrees_of_Terrace}  <description/> </term>
+          <term> {Terraces_land_modifications} {Width_and_Direction_Degrees_of_Terrace}   <description/> </term>
         </term>
 
         <term> {Other}
           <description/>
-          <term> {Length}
-            <description/>
-          </term>
-          <term> {Width}
-            <description/>
-          </term>
+          <term> {Other} {Length}  <description/> </term>
+          <term> {Other} {Width}   <description/> </term>
         </term>
       </lookup>
     </property>
     <property name="Measurement_Field" type="freetext" isIdentifier="true">
       <description/>
-      <formatString><![CDATA[{{if $1 then "$1: "}}]]></formatString>
     </property>
   </ArchaeologicalElement>
   <ArchaeologicalElement name="External_Photo">
