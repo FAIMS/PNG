@@ -121,7 +121,8 @@
               <Photos/>
               <Take_Photo/>
               <Sketches/>
-              <Attach_A_Sketch/>
+              <Attach_Sketch/>
+              <View_Sketch/>
             </Site_Recording>
             <Measurements>
               <Col_Group_6>
@@ -441,16 +442,20 @@
           <label>{Take_Photo}</label>
         </trigger>
 
-        <select ref="Sketches" faims_attribute_name="Sketches" faims_attribute_type="vocab" faims_certainty="true" faims_annotation="true">
+        <select type="file" faims_sync="true" ref="Sketches" faims_attribute_name="Sketch" faims_attribute_type="measure" faims_certainty="true" faims_annotation="true" faims_read_only="false">
           <label>{Sketches}</label>
           <item>
             <label>placeholder</label>
             <value>placeholder</value>
           </item>
         </select>
-        <trigger ref="Attach_A_Sketch" faims_style_class="faims-blue">
-          <label>{Attach_A_Sketch}</label>
+        <trigger ref="Attach_Sketch" faims_style_class="faims-blue">
+          <label>{Attach_Sketch}</label>
         </trigger>
+        <trigger ref="View_Sketch" faims_style_class="faims-blue">
+          <label>{View_Sketch}</label>
+        </trigger>
+
       </group>
       <group ref="Measurements">
         <label>{Measurements}</label>

@@ -301,6 +301,11 @@
     <formatString><![CDATA[{{if $1 then "$1 "}}{{if $2 then "$2 "}}{{if $3 then "{$3} "}}{{if lessThan($4, 1.0) then "[$4] "}}]]></formatString>
     </property>
 
+    <property name="Sketch" type="file" file="true" thumbnail="true">
+      <description></description>
+    <formatString><![CDATA[{{if $1 then "$1 "}}{{if $2 then "$2 "}}{{if $3 then "{$3} "}}{{if lessThan($4, 1.0) then "[$4] "}}]]></formatString>
+    </property>
+
     <property name="Sketches" type="enum">
       <description/>
       <lookup>

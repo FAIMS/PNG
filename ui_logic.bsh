@@ -668,8 +668,25 @@ doNotDelete() {
 /******************************************************************************/
 /*                                   PHOTOS                                   */
 /******************************************************************************/
-onEvent("Site/Site_Recording/Take_Photo", "click", "attachPictureTo(\"Site/Site_Recording/Photos\")");
+onEvent(
+        "Site/Site_Recording/Take_Photo",
+        "click",
+        "attachPictureTo(\"Site/Site_Recording/Photos\")"
+);
 
+/******************************************************************************/
+/*                                  SKETCHES                                  */
+/******************************************************************************/
+onEvent(
+        "Site/Site_Recording/Attach_Sketch",
+        "click",
+        "attachFileTo(\"Site/Site_Recording/Sketches\");"
+);
+onEvent(
+        "Site/Site_Recording/View_Sketch",
+        "click",
+        "viewArchEntAttachedFiles(entity_id);"
+);
 
 /******************************************************************************/
 /*                                    MISC                                    */
@@ -690,7 +707,7 @@ saveEntitiesToRel(String type, String entity1, String entity2) {
 
 // These should go in functions so we can see what's populating what.
 makeVocab("CheckBoxGroup" , "Site/Site_Recording/Cultural_Material_Present" , "Cultural_Material_Present");
-makeVocab("CheckBoxGroup" , "Site/Site_Recording/Sketches"                  , "Sketches");
+//makeVocab("CheckBoxGroup" , "Site/Site_Recording/Sketches"                  , "Sketches");
 makeVocab("DropDown"      , "Site/Site_Recording/Current_Land_Use"          , "Current_Land_Use");
 makeVocab("DropDown"      , "Site/Site_Recording/Disturbance"               , "Disturbance");
 makeVocab("DropDown"      , "Site/Site_Recording/Ground_Visibility"         , "Ground_Visibility");
