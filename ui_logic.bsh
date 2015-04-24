@@ -689,6 +689,250 @@ onEvent(
 );
 
 /******************************************************************************/
+/*                                    MAP                                     */
+/******************************************************************************/
+onEvent("Project/Map", "show", "renderDynamicMapViews();");
+onEvent("Project/Map/Centre_Map", "click", "centreMap();");
+onEvent("Project/Map/Save_Map_Settings", "click", "saveMapSettings();");
+onEvent("Project/Map/Create_Shape", "click", "createShape();");
+
+// Flag used for onShow tab redirects
+Boolean redirectFlag = false;
+navigateToMap() {
+    redirectFlag = true;
+    showTabGroup("Project");
+}
+
+onEvent("Project/Start", "show", "print(\"[project onShow] map redirect flag: \" + redirectFlag);if(redirectFlag){showTab(\"Project/Map\");redirectFlag=false;}");
+
+
+/* Renders a plotFromMap or showMap button depending on how many points have been drawn on the map. */
+// renderMapButton() {
+//     executeViewTask(new ViewTask() {
+//         doTask() {
+//             String tabgroup = getSampleTypePath();
+//             buttonDef = null;
+//             print("[renderMapButton()] Rendering show map button.");     
+//             buttonDef = createViewDef().createButton().setLabel("Show map");
+//             createView(tabgroup + "/Basic_Info/showMap", buttonDef, tabgroup + "/Basic_Info/containerTakePoint/child2");
+//             onEvent(tabgroup + "/Basic_Info/showMap", "delayclick", "arrivedFromSample=true;redirectFlag=true;showTabGroup(\"Project\");");
+//         }
+//     });
+// }
+
+/* Saves the sample archent with geometry equal to the single point drawn on the map. */
+getPointFromMap() {
+    showToast("{Not_Implemented}");
+}
+
+Boolean mapButtonRendered = false;
+
+dataEntryLayerID = null;
+
+/* Initialises the map. */
+initMap() {
+    // Base map layer
+    setMapZoom("Project/Map/map", 13.0f);
+    // showBaseMap("Project/Map/map", "base map", "files/data/maps/SydneyStreetmap.tif");
+    // showBaseMap("Project/Map/map", "base map", "files/data/maps/Capricorn.tif");
+
+    showBaseMap("Project/Map/map", "base map", "files/data/maps/Topo_Syd_3857.3857.Tiled.tif");
+    showRasterMap("Project/Map/map", "dem syd", "files/data/maps/dem_syd_3857.3857.Tiled.tif");
+    showRasterMap("Project/Map/map", "mag map syd", "files/data/maps/magmap_syd_3857.3857.Tiled.tif");  
+    showRasterMap("Project/Map/map", "rad map pctk syd", "files/data/maps/radmap_pctk_syd_3857.3857.Tiled.tif");
+    showRasterMap("Project/Map/map", "rad ppmu syd", "files/data/maps/rad_ppmu_syd_3857.3857.Tiled.tif");
+    showRasterMap("Project/Map/map", "rad ppmth syd", "files/data/maps/rad_ppmth_syd_3857.3857.Tiled.tif");
+
+    ps = createPointStyle(10, Color.BLUE, 0.2f, 0.5f);
+    ls = createLineStyle(10, Color.GREEN, 0.05f, 0.3f, null);
+    pos = createPolygonStyle(10, Color.parseColor("#440000FF"), createLineStyle(10, Color.parseColor("#AA000000"), 0.01f, 0.3f, null));
+    ts = createTextStyle(10, Color.BLACK, 40, Typeface.SANS_SERIF);
+    
+    isEntity = true;
+    // Database layers
+    waterQueryName = "Water Samples";
+    waterQuerySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Water Sample'";
+    waterps = createPointStyle(10, Color.BLUE, 0.2f, 0.5f);
+    showDatabaseLayer("Project/Map/map", "Water Samples", isEntity, waterQueryName, waterQuerySql, waterps, ls, pos, ts);
+        
+    plantQueryName = "Plant Samples";
+    plantQuerySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Plant Sample'";
+    plantps = createPointStyle(10, Color.GREEN, 0.2f, 0.5f);
+    showDatabaseLayer("Project/Map/map", "Plant Samples", isEntity, plantQueryName, plantQuerySql, plantps, ls, pos, ts);
+    
+    soilQueryName = "Soil Samples";
+    soilQuerySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Soil Sample'";
+    soilps = createPointStyle(10, Color.BLACK, 0.2f, 0.5f);
+    showDatabaseLayer("Project/Map/map", "Soil Samples", isEntity, soilQueryName, soilQuerySql, soilps, ls, pos, ts);
+    
+    rockQueryName = "Rock Samples";
+    rockQuerySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Rock Sample'";
+    rockps = createPointStyle(10, Color.RED, 0.2f, 0.5f);   
+    showDatabaseLayer("Project/Map/map", "Rock Samples", isEntity, rockQueryName, rockQuerySql, rockps, ls, pos, ts);
+    
+    notesQueryName = "Notes";
+    notesQuerySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Note'";
+    notesps = createPointStyle(10, Color.YELLOW, 0.2f, 0.5f);
+    notesls = createLineStyle(10, Color.YELLOW, 0.05f, 0.3f, null);
+    notespos = createPolygonStyle(10, Color.YELLOW, createLineStyle(10, Color.parseColor("#AA000000"), 0.01f, 0.3f, null));
+    showDatabaseLayer("Project/Map/map", "Shape Notes", isEntity, notesQueryName, notesQuerySql, notesps, notesls, notespos, ts);
+    // Canvas layers
+    dataEntryLayerID = createCanvasLayer("Project/Map/map", "Data Entry Layer");
+    setSelectedLayer("Project/Map/map", "Data Entry Layer");
+    loadMapSettings();
+    print("[initMap()] Finished Initialising the Map.");
+}
+
+/* Centres the map on the current position. */
+centreMap() {
+    if(!isExternalGPSOn() && !isInternalGPSOn()) {
+        showToast("{GPS_Not_Initialised}");
+    } else {
+        centerOnCurrentPosition("Project/Map/map");
+    }
+}
+
+/* Loads a map configuration file if one exists. */
+loadMapSettings() {
+   jsonFile = getAttachedFilePath("files/data/saved_config.json");
+    if(new File(jsonFile).exists()) {
+        loadMapViewConfiguration("Project/Map/map", jsonFile, "showToast(\"{Loaded_Map_Configuration}\")");
+    }
+}
+
+/* Saves the current map configuration. */
+saveMapSettings() {
+    file = getAttachedFilePath("files/data/saved_config.json");
+    saveMapViewConfiguration("Project/Map/map", file, "showToast(\"{Saved_Map_Configuration}\")");
+}
+
+shapeUUID = null;
+onEvent("Shape/Shape_Note", "show", "saveShape();");
+
+/* Generates a confirmation prompt to delete the given shape note. */
+deleteShape(String shapeID) {
+    showAlert("{Confirm_Deletion}", "{Press_To_Delete} {Shape_Note}!", "reallyDeleteShape(\"" + shapeID + "\")", "doNotDelete()");
+}
+
+/* Deletes the given Shape. */
+reallyDeleteShape(String shapeID) {
+    deleteArchEnt(shapeID, new DeleteCallback() {
+        onDelete(uuid) {
+            shapeID = null;
+            shapeUUID = shapeID;
+            showToast("{Shape_Note_Deleted}");
+            navigateToMap();
+        }
+    });
+}
+
+/* Auto saves the shape note entity. */
+saveShape() {
+    List geolist = getGeometryList("Project/Map/map", dataEntryLayerID);
+    print("[saveShape()] saving with geolist: " + geolist);
+    Boolean enable_autosave = true;
+    saveTabGroup("Shape", shapeUUID, geolist, null, new SaveCallback() {
+        onSave(uuid, newRecord) {
+            shapeUUID = uuid;
+            print("[saveShape()] Autosaved shape uuid: "+shapeUUID);
+            // Clear the data entry layer
+            if (newRecord && geoList != null && geolist.size() != 0) {
+                for (geom : geolist) {
+                    print("Geometry cleared:" + geom.userData.geomId);
+                    clearGeometry("Project/Map/map", geom.userData.geomId);
+                }
+                geoList = getGeometryList("Project/Map/map", dataEntryLayerID);
+                print("[saveShape()] Cleared geometry list: " + geoList);
+            }
+        }
+        onError(message) {
+            showToast(message);
+        }  
+    }, enable_autosave);
+}
+
+/* Saves drawn shapes with an attatched note. */
+createShape() {
+    shapeUUID = null;
+    print("[createShape()] DataEntryLayer ID: " + dataEntryLayerID);
+    List geolist = getGeometryList("Project/Map/map", dataEntryLayerID);
+    print("[createShape()] geolist: " + geolist);
+    if (geolist == null || geolist.size() == 0) {
+        showWarning("{Warning}", "{Error_No_Shapes_Present}");
+    } else {
+        newTabGroup("Shape");
+        print("[createShape()] new shape tab group");
+    }
+}
+
+Boolean arrivedFromSample = false;
+
+/* Renders all the dynamic views for the map tab. */
+renderDynamicMapViews() {
+    print("[renderDynamicMapViews()] arrived at map from sample: " + arrivedFromSample);
+    removeAllViewsAndContainers("Project");
+    executeViewTask(new ViewTask() {
+        doTask() {
+            if (arrivedFromSample) {
+                print("[renderDynamicMapViews()] arrived at map from sample.");
+                arrivedFromSample = false;
+                buttonDef = createViewDef().createButton().setLabel("Return to data recording and save point");
+                createView("Project/Map/returnToSample", buttonDef);
+                onEvent("Project/Map/returnToSample", "click", "returnToSample();");
+            } else {
+                print("[renderDynamicMapViews()] arrived at map from somewhere other than a sample.");
+            }
+        }
+    });
+}
+
+// // Bind newly created geometry to a geo ID list to use later in clearing.
+// ArrayList geometryIDList = new ArrayList();
+// onToolEvent("Project/Map/map", "create", "onCreate()");
+// onCreate() {
+//     geometryIDList.add(getMapGeometryCreated());
+//     print("Geometry id list: " + geometryIDList);
+// }
+
+/* Returns to the sample from the map after recording a point. */
+returnToSample() {
+    String tabgroup = getSampleTypePath();
+
+    // Get the geometry from the data layer and proceed only if the geometry is a single point.
+    List geolist = getGeometryList("Project/Map/map", dataEntryLayerID);
+    print("[returnToSample()] Gemoetry List: " + geolist);
+    if (geolist.size() != 1) {
+        showAlert("{Alert}", "{Only_One_Point_Allowed}", "", "showTabGroup(\""+tabgroup+"\");");
+        return;
+    }
+    boolean isPoint = false;
+    if (geolist.get(0) instanceof Point) {
+        isPoint = true;
+    }
+    if (!isPoint) {
+        return;
+    }
+
+    // Save the archent with the point as the entity geometry
+    saveArchEnt(currentSampleUUID, getSampleType(), geolist, null, new SaveCallback() {
+        onSave(uuid, newRecord) {
+            print("[returnToSample()] Saved geometry: " + geolist);
+            fillInGPS();
+            // for (Geometry geomId : geolist) {
+            //     clearGeometry("Project/Map/map", geomId);
+            // }
+        }  
+    });
+
+    // Clear the data entry layer and return to the sample tab
+    
+    // clearGeometryList("Project/Map/map", geolist);
+    showTabGroup(tabgroup);
+}
+
+initMap();
+
+/******************************************************************************/
 /*                                    MISC                                    */
 /******************************************************************************/
 
