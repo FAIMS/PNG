@@ -314,7 +314,7 @@ updateGPSStatus() {
             status += "\nNorthing: " + projPosition.getLatitude();
             status += "   Easting: " + projPosition.getLongitude();
             status += "\nAccuracy: " + getGPSEstimatedAccuracy();
-            // status += "\n Heading: " + getGPSHeading();
+            status += "\n Heading: " + getGPSHeading();
         } else {
             status += "\nPosition: no GPS position could be found";
         }
