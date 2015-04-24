@@ -118,7 +118,8 @@
               <Site_Description/>
               <General_Notes/>
               <Recommendation/>
-              <Photo/>
+              <Photos/>
+              <Take_Photo/>
               <Sketches/>
               <Attach_A_Sketch/>
             </Site_Recording>
@@ -428,9 +429,18 @@
         <input ref="Recommendation" faims_attribute_name="Recommendation" faims_attribute_type="measure" faims_certainty="true" faims_annotation="true">
           <label>{Recommendation}</label>
         </input>
-        <group ref="Photo">
+
+        <select ref="Photos" faims_attribute_name="Photos" type="camera" faims_sync="true" faims_attribute_type="measure" faims_certainty="true" faims_annotation="true" faims_read_only="false">
           <label>{Photo}</label>
-        </group>
+          <item>
+            <label>placeholder</label>
+            <value>placeholder</value>
+          </item>
+        </select>
+        <trigger ref="Take_Photo" faims_style_class="faims-blue">
+          <label>{Take_Photo}</label>
+        </trigger>
+
         <select ref="Sketches" faims_attribute_name="Sketches" faims_attribute_type="vocab" faims_certainty="true" faims_annotation="true">
           <label>{Sketches}</label>
           <item>

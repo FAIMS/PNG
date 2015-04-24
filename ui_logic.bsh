@@ -377,8 +377,14 @@ loadSite() {
     showTabGroup("Site", entity_id);
 }
 
+/******************************************************************************/
+/*                                  PHOTOLOG                                  */
+/******************************************************************************/
 
-
+onEvent("Photolog", "show", "addPhotologNavigation();");
+onFocus("Photolog/Photolog/ID", null, "activateAutoSavePhotolog();");
+onEvent("Photolog/Photolog/Photo_Back", "click", "cancelTabGroup(\"Photolog\", false); showTab(\"Site/Photolog\");");
+onEvent("Site/Photolog/List_Of_External_Photos", "click", "loadPhotolog();");
 
 /* Populates the photolog list with the existing photologs linked to the given sample ID. */
 loadRelatedPhotologs(String related_sample_id) {
@@ -413,7 +419,6 @@ loadRelatedPhotologs(String related_sample_id) {
     }    
 }
 
-
 /* Make a new log, somewhere in the forest, which has a knack for taking pictures */
 newPhotolog() {
     newTabGroup("Photolog");
@@ -437,16 +442,6 @@ savePhotolog() {
         }
     });
 }
-
-/******************************************************************************/
-/*                                  PHOTOLOG                                  */
-/******************************************************************************/
-
-onEvent("Photolog", "show", "addPhotologNavigation();");
-onFocus("Photolog/Photolog/ID", null, "activateAutoSavePhotolog();");
-onEvent("Photolog/Photolog/Photo_Back", "click", "cancelTabGroup(\"Photolog\", false); showTab(\"Site/Photolog\");");
-
-onEvent("Site/Photolog/List_Of_External_Photos", "click", "loadPhotolog();");
 
 /* Loads a photolog based on the most recent list item selected. */
 loadPhotolog() {
@@ -477,8 +472,6 @@ loadPhotologFrom(archentid) {
         }
     });
 }
-
-
 
 /* Generates a confirmation to delete the current photolog */
 deletePhotolog() {
@@ -671,6 +664,12 @@ reallyDeletepH(String ph_id, String ph_index) {
 doNotDelete() {
     showToast("{Delete_Cancelled}");
 }
+
+/******************************************************************************/
+/*                                   PHOTOS                                   */
+/******************************************************************************/
+onEvent("Site/Site_Recording/Take_Photo", "click", "attachPictureTo(\"Site/Site_Recording/Photos\")");
+
 
 /******************************************************************************/
 /*                                    MISC                                    */
