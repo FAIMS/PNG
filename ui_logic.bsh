@@ -1,5 +1,4 @@
-// TODO: Sites should be save immediately after creation, else measurements will
-//       not be saved properly.
+// TODO: Bind duplicate button
 
 /*** 'Editable' - you can edit the code below based on the needs ***/
 import java.util.concurrent.Callable;
@@ -128,22 +127,53 @@ addActionBarItem("external_gps", new ToggleActionButtonCallback() {
 
 
 
-createAndPopulateSite() {
+createNewSite() {
+    siteCode = getFieldValue("Project/Main/Site_Code");
+    if (isNull(siteCode)) {
+        showWarning("{Warning}", "{Err_Site_Code}");
+        return;
+    }
+
     entity_id = null;
     newTabGroup("Site");
+}
+
+isNewSite() {
+    return entity_id == null;
+}
+initNewSite() {
+    if (!isNewSite())
+        return;
 
     siteCode   = getFieldValue("Project/Main/Site_Code");
     siteNumber = getFieldValue("Project/Main/Site_Number");
     team       = getFieldValue("Project/Main/Team_Members");
-    setFieldValue("Site/Site_Recording/Author"      , username);
     setFieldValue("Site/Site_Recording/Site_Code"   , siteCode);
     setFieldValue("Site/Site_Recording/Site_Number" , siteNumber);
     setFieldValue("Site/Site_Recording/Team"        , team);
+    setFieldValue("Site/Site_Recording/Author"      , username);
     setTimestamp( "Site/Site_Recording/Created_At");
    
     //take autonumbering from csiro, make sure to support localsettings preservation of ID. 
     setSiteStartingID(Integer.toString(Integer.parseInt(siteNumber) + 1));
 }
+
+//createAndPopulateSite() {
+    //entity_id = null;
+    //newTabGroup("Site");
+
+    //siteCode   = getFieldValue("Project/Main/Site_Code");
+    //siteNumber = getFieldValue("Project/Main/Site_Number");
+    //team       = getFieldValue("Project/Main/Team_Members");
+    //setFieldValue("Site/Site_Recording/Author"      , username);
+    //setFieldValue("Site/Site_Recording/Site_Code"   , siteCode);
+    //setFieldValue("Site/Site_Recording/Site_Number" , siteNumber);
+    //setFieldValue("Site/Site_Recording/Team"        , team);
+    //setTimestamp( "Site/Site_Recording/Created_At");
+   
+    ////take autonumbering from csiro, make sure to support localsettings preservation of ID. 
+    //setSiteStartingID(Integer.toString(Integer.parseInt(siteNumber) + 1));
+//}
 
 //setSitePrefix(String samplePrefix) {
     //setFieldValue("Project/Start/Sample_Prefix", samplePrefix);
@@ -184,54 +214,120 @@ setTimestamp(String path) {
     setFieldValue(path, new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(new Date()));
 }
 
-fillInGPS() {
-    location = getGPSPosition();
-    locationProj = getGPSPositionProjected();
-    if (!isExternalGPSOn() && !isInternalGPSOn()) {
-        showWarning("{Err_Loc}", "{Err_Con}");
+takePoint() {
+    Object position = getGPSPosition();
+    if (position == null) {
+        showToast("{GPS_Not_Initialised}");
         return;
     }
-    if (location == null){
-        showWarning("{Err_Loc}", "{Err_Sig}");
-        return;
-    }
+    Object projPosition = getGPSPositionProjected();
+    Double latitude = position.getLatitude();
+    Double longitude = position.getLongitude();
+    Double northing = projPosition.getLatitude();
+    Double easting = projPosition.getLongitude();
 
-    tab = "Site/Site_Recording/";
-    acc = getGPSEstimatedAccuracy();
-    hea = getGPSHeading();
-    lat = location.getLatitude();
-    lon = location.getLongitude();
-    nor = locationProj.getLatitude();
-    eas = locationProj.getLongitude();
-    setFieldValue(tab + "Latitude"  , lat);
-    setFieldValue(tab + "Longitude" , lon);
-    setFieldValue(tab + "Northing"  , nor);
-    setFieldValue(tab + "Easting"   , eas);
-    setFieldValue(tab + "Accuracy"  , nor);
-    setFieldValue(tab + "Heading"   , hea);
+    samplePoint = new Point(new MapPos(easting, northing), null, (PointStyle) null, null);
+    ArrayList geolist = new ArrayList();
+    geolist.add(samplePoint);
+    entName = "Site";
+    saveArchEnt(entity_id, entName, geolist, null, new SaveCallback() {
+        onSave(uuid, newRecord) {
+            print("[takePoint()] Added geometry: " + geolist);
+            fillInGPS();
+        }  
+    });    
 }
 
+/* Sets the value of GPS views for the given tab path. */
+fillInGPS() {
+    if (isNull(entity_id)) {
+        return;
+    }
+    String tabgroup = "Site/Site_Recording/";
+    //String query = "select x(transform(geospatialcolumn, 4326)) as longtiude, y(transform(geospatialcolumn, 4326)) as latitude, x(transform(geospatialcolumn, CAST (vocabname AS INTEGER))) as easting, y(transform(geospatialcolumn, CAST (vocabname AS INTEGER))) as northing " +
+        //"from latestnondeletedarchent, vocabulary " +
+        //"where uuid = " + entity_id + " " +
+        //"and vocabid = " + getFieldValue(tabgroup + "/Basic_Info/SRID") + ";";
+
+    String query = "select x(transform(geospatialcolumn, 4326)) as longtiude, y(transform(geospatialcolumn, 4326)) as latitude, x(transform(geospatialcolumn, "+getModuleSrid()+")) as easting, y(transform(geospatialcolumn, "+getModuleSrid()+")) as northing " +
+                "from latestnondeletedarchent, vocabulary " +
+                        "where uuid = " + entity_id + " ";
+
+    fetchOne(query, new FetchCallback() {
+        onFetch(result) {
+            print("[fillInGPS()] Fetched DB transformed geometry: " + result);
+            setFieldValue(tabgroup + "Latitude", result.get(0));
+            setFieldValue(tabgroup + "Longitude", result.get(1));
+            setFieldValue(tabgroup + "Northing", result.get(2));
+            setFieldValue(tabgroup + "Easting", result.get(3));
+        }
+    });
+}
+
+//takePoint() {
+    //location = getGPSPosition();
+    //locationProj = getGPSPositionProjected();
+    //if (!isExternalGPSOn() && !isInternalGPSOn()) {
+        //showWarning("{Err_Loc}", "{Err_Con}");
+        //return;
+    //}
+    //if (location == null){
+        //showWarning("{Err_Loc}", "{Err_Sig}");
+        //return;
+    //}
+
+    //tab = "Site/Site_Recording/";
+    //acc = getGPSEstimatedAccuracy();
+    //hea = getGPSHeading();
+    //lat = location.getLatitude();
+    //lon = location.getLongitude();
+    //nor = locationProj.getLatitude();
+    //eas = locationProj.getLongitude();
+
+    //fillInGPS();
+//}
+
+//fillInGPS() {
+    //location = getGPSPosition();
+    //locationProj = getGPSPositionProjected();
+    //if (!isExternalGPSOn() && !isInternalGPSOn()) {
+        //showWarning("{Err_Loc}", "{Err_Con}");
+        //return;
+    //}
+    //if (location == null){
+        //showWarning("{Err_Loc}", "{Err_Sig}");
+        //return;
+    //}
+
+    //tab = "Site/Site_Recording/";
+    //acc = getGPSEstimatedAccuracy();
+    //hea = getGPSHeading();
+    //lat = location.getLatitude();
+    //lon = location.getLongitude();
+    //nor = locationProj.getLatitude();
+    //eas = locationProj.getLongitude();
+    //setFieldValue(tab + "Latitude"  , lat);
+    //setFieldValue(tab + "Longitude" , lon);
+    //setFieldValue(tab + "Northing"  , nor);
+    //setFieldValue(tab + "Easting"   , eas);
+    //setFieldValue(tab + "Accuracy"  , nor);
+    //setFieldValue(tab + "Heading"   , hea);
+//}
+
 /* Creates sidebar navigation for the sample. */
-addSampleNavigation() {
-    // tabgroup = getSampleTypePath();
-    removeNavigationButton("new");
-    removeNavigationButton("duplicate");
-    removeNavigationButton("delete");
+addNavigationButtons() {
+    removeNavigationButtons();
 
     addNavigationButton("new", new ActionButtonCallback() {
         actionOnLabel() {
             "{New_Site}";
         }
         actionOn() {
-            // print("[Sidebar New Sample] Attempting to make a new sample");
-            // if(!isNull(currentSampleUUID)) {
-            //     newSample();
-            //     autoSaveSample();
+             print("[Sidebar New Sample] Attempting to make a new sample");
 
-            // } else {
-            //     String newSampleLogic = "newSample();" + "autoSaveSample();";
-            //     showAlert("{Warning}", "{Lose_Unsaved_Changes}!", newSampleLogic, "");
-            // }
+             warnChanges = true;
+             cancelTabGroup("Site", warnChanges);
+             createNewSite();
         }
     }, "success");
 
@@ -240,12 +336,46 @@ addSampleNavigation() {
             "{Duplicate_Site}";
         }
         actionOn() {
-            // if(!isNull(currentSampleUUID)) {
-            //     // duplicateSample();
-            //     dupeSample3();
-            // } else {
-            //     showWarning("{Warning}", "{Sample_Not_Duplicated}");
-            // }
+             if(isNull(entity_id)) {
+                 showWarning("{Warning}", "{Site_Not_Duplicated}");
+             } else {
+                //// This geometry will be added to the new entity
+                //geometry = null;
+
+                //siteNumber = getFieldValue("Project/Main/Site_Number");
+                //siteNumberAttribute = createEntityAttribute(
+                    //"Site_Number",
+                    //null,
+                    //null,
+                    //siteNumber + "", // Concatenation performs type conversion
+                    //null);
+
+                //// These attributes will be added to the new entity
+                //extraAttributes = new ArrayList();
+                //extraAttributes.add(siteNumberAttribute);
+
+                //// These attributes will be excluded from the new entity
+                //excludeAttributes = new ArrayList();
+                //excludeAttributes.add("name");
+                //excludeAttributes.add("Latitude");
+                //excludeAttributes.add("Longitude");
+                //excludeAttributes.add("Northing");
+                //excludeAttributes.add("Easting");
+                //excludeAttributes.add("Accuracy");
+                //excludeAttributes.add("Heading");
+
+                //saveCallback = new SaveCallback() {
+                    //onSave(newRecord) {
+                        //setSiteStartingID(Integer.toString(Integer.parseInt(siteNumber) + 1));
+                    //}
+                    //onError(message) {
+                        //showToast(message);
+                    //}
+                //};
+                //duplicateTabGroup("Site", geometry, extraAttributes, excludeAttributes, saveCallback);
+                //
+                // TODO: Warn user that geometry data is not duplicated
+             }
         }
     }, "primary");
 
@@ -254,10 +384,34 @@ addSampleNavigation() {
             "{Delete_Site}";
         }
         actionOn() {
-            // deleteSample();
+             deleteSite();
         }
     }, "danger");    
 
+}
+
+/* Generates a confirmation prompt for deleting the current sample. */
+deleteSite() {
+    tabgroup = "Site";
+    print("[deleteSite()] Prompting a sample deletion, entity_id = " + entity_id);
+    if (!isNull(entity_id)) {
+        print("[deleteSite()] Confirming a sample deletion");
+        showAlert("{Confirm_Deletion}", "{Press_To_Delete} {" + tabgroup + "}!", "reallyDeleteSite()", "doNotDelete()");
+    } else {
+        cancelTabGroup(tabgroup, true);
+        print("[deleteSite()] Cancelling a sample deletion.");
+    }
+}
+
+/* Deletes the current water sample. */
+reallyDeleteSite() {
+    print("[reallyDeleteSite()] Really deleting the sample.");
+    tabgroup = "Site";
+    deleteArchEnt(entity_id, new DeleteCallback() {
+        onDelete(uuid) {
+            cancelTabGroup(tabgroup, false);
+        }
+    });
 }
 
 /* Removes sidebar buttons. */
@@ -323,7 +477,7 @@ updateGPSStatus() {
     setFieldValue("Project/Main/GPS_Diagnostics", status);
 }
 
-saveSite() {
+autoSaveSite() {
     enable_autosave = true;
     //keepTabGroupChanges("Site");
     saveTabGroup("Site", entity_id, null, null, new SaveCallback() {
@@ -332,7 +486,7 @@ saveSite() {
             if(newRecord) {
                 showToast("{New_Record_Created}");
             }
-            Log.d("saveSite", "saving");
+            Log.d("autoSaveSite", "saving");
         }
     },
     enable_autosave);
@@ -374,7 +528,19 @@ loadSites() {
 
 loadSite() {
     entity_id = getListItemValue();
-    showTabGroup("Site", entity_id);
+    showTabGroup("Site", entity_id, new FetchCallback() {
+        onFetch(result) {
+            siteCode   = getFieldValue("Site/Site_Recording/Site_Code");
+            siteNumber = getFieldValue("Site/Site_Recording/Site_Number");
+            team       = getFieldValue("Site/Site_Recording/Team");
+
+            setFieldValue("Project/Main/Site_Code"    , siteCode);
+            setFieldValue("Project/Main/Site_Number"  , siteNumber);
+            setFieldValue("Project/Main/Team_Members" , team);
+
+            setSiteStartingID(Integer.toString(Integer.parseInt(siteNumber) + 1));
+        }
+    });
 }
 
 /******************************************************************************/
@@ -524,23 +690,22 @@ addPhotologNavigation() {
 /*                                MEASUREMENTS                                */
 /******************************************************************************/
 
-ph_count = 0;
-preferred_ph = null;
+measurement_count = 0;
 
-onEvent("Site/Measurements", "show", "renderpHEhPage();");
+onEvent("Site/Measurements", "show", "renderMeasurementPage();");
 
-/* Renders the pH/Eh tab using dynamic UI. */
-renderpHEhPage() {
+/* Renders the measurement tab using dynamic UI. */
+renderMeasurementPage() {
     executeViewTask(new ViewTask() {
         doTask() {
             o = "orientation";
             e = "even";
             removeAllViewsAndContainers("Site");
             createContainer("Site/Measurements/container3"   , o);
-            createContainer("Site/Measurements/pH_Container" , e   , "Site/Measurements/container3");
+            createContainer("Site/Measurements/measurement_container" , e   , "Site/Measurements/container3");
 
-            ph_count = 0;
-            ArrayList ph_list = new ArrayList();
+            measurement_count = 0;
+            ArrayList measurement_list = new ArrayList();
 
             fetchAll("select uuid, response " +
                      "from latestnondeletedarchentformattedidentifiers " +
@@ -551,21 +716,21 @@ renderpHEhPage() {
                      "join relntype using (relntypeid)) on (a.uuid != b.uuid and a.relationshipid = b.relationshipid) " +
                      "where relntypename='Site-Measurement' " +
                      "and a.uuid = " + entity_id + "); ", new FetchCallback() {
-                        onFetch(ph_list) {
-                            //print(ph_list);
+                        onFetch(measurement_list) {
+                            //print(measurement_list);
 
-                            for(ph : ph_list) {
-                                String ph_id    = ph.get(0);
-                                String ph_value = ph.get(1);
-                                makePhRow(
-                                    ph_id,
-                                    ph_value,
-                                    ph_count + "" // Implicit type conversion
+                            for(m : measurement_list) {
+                                String measurement_id    = m.get(0);
+                                String measurement_value = m.get(1);
+                                makeMeasurementRow(
+                                    measurement_id,
+                                    measurement_value,
+                                    measurement_count + "" // Implicit type conversion
                                 );
-                                ph_count++;
+                                measurement_count++;
                             }
 
-                            onEvent("Site/Measurements/Add_A_Measurement", "delayclick", "addNewpH();");
+                            onEvent("Site/Measurements/Add_A_Measurement", "delayclick", "addNewMeasurement();");
                         }
                         onError(message) {
                             showToast(message);
@@ -576,13 +741,13 @@ renderpHEhPage() {
     });
 }
 
-/* Adds a new pH value, saves the entity and updates the dynamic UI. */
-addNewpH() {
+/* Adds a new measurement value, saves the entity and updates the dynamic UI. */
+addNewMeasurement() {
     measurementField    = getFieldValue("Site/Measurements/Measurement_Field");
     measurementTypeId   = getFieldValue("Site/Measurements/Measurement_Type");
     measurementTypeName = "";     // Gotta set this with the fetchOne call below
     if(isNull(measurementField)) {
-        showToast("{Please_Fill_In_PH}");
+        showToast("{Please_Fill_In_Measurement}");
         return;
     }
 
@@ -601,61 +766,63 @@ addNewpH() {
     attributes.add(createEntityAttribute("Measurement_Field" , null , null              , measurementField , null));
 
     saveArchEnt(null, "Measurement", null, attributes, new SaveCallback() {
-        onSave(ph_id, newRecord) {
-            saveEntitiesToRel("Site-Measurement", entity_id, ph_id);
+        onSave(measurement_id, newRecord) {
+            saveEntitiesToRel("Site-Measurement", entity_id, measurement_id);
 
-            String ph_value = measurementTypeName + ": " + measurementField;
-            makePhRow(
-                ph_id,
-                ph_value,
-                ph_count + "" // Implicit type conversion
+            String measurement_value = measurementTypeName + ": " + measurementField;
+            makeMeasurementRow(
+                measurement_id,
+                measurement_value,
+                measurement_count + "" // Implicit type conversion
             );
-            ph_count++;
+            measurement_count++;
 
-            onEvent("Site/Measurements/Add_A_Measurement", "delayclick", "addNewpH();");
+            onEvent("Site/Measurements/Add_A_Measurement", "delayclick", "addNewMeasurement();");
         }
     });
 }
 
-makePhRow(String ph_id, String ph_value, String ph_count) {
+makeMeasurementRow(String measurement_id, String measurement_value, String measurement_count) {
     o = "orientation";
-    e = "even";
+    //e = "even";
+    h = "heavy";
+    l = "light";
 
     tab    = "Site/Measurements/";
     field  = createViewDef().createTextField("decimal").setReadOnly(true);
     button = createViewDef().createButton().setLabel("X").setStyleCss("faims-danger");
 
-    createContainer(tab + "pH_Row_"              + ph_count , o      , tab + "pH_Container");
-    createContainer(tab + "pH_Value_Container_"  + ph_count , e      , tab + "pH_Row_"              + ph_count);
-    createContainer(tab + "Delete_pH_Container_" + ph_count , e      , tab + "pH_Row_"              + ph_count);
-    createView(     tab + "pH_Value_"            + ph_count , field  , tab + "pH_Value_Container_"  + ph_count);
-    createView(     tab + "Delete_pH_"           + ph_count , button , tab + "Delete_pH_Container_" + ph_count);
+    createContainer(tab + "measurement_row_"              + measurement_count , o      , tab + "measurement_container");
+    createContainer(tab + "measurement_value_container_"  + measurement_count , l      , tab + "measurement_row_"              + measurement_count);
+    createContainer(tab + "delete_measurement_container_" + measurement_count , h      , tab + "measurement_row_"              + measurement_count);
+    createView(     tab + "measurement_value_"            + measurement_count , field  , tab + "measurement_value_container_"  + measurement_count);
+    createView(     tab + "delete_measurement_"           + measurement_count , button , tab + "delete_measurement_container_" + measurement_count);
 
-    setFieldValue("Site/Measurements/pH_Value_" + ph_count, ph_value);
-    onEvent("Site/Measurements/Delete_pH_" + ph_count, "click", "deletepH(\"" + ph_id + "\", \"" + ph_count + "\");");
+    setFieldValue("Site/Measurements/measurement_value_" + measurement_count, measurement_value);
+    onEvent("Site/Measurements/delete_measurement_" + measurement_count, "click", "deleteMeasurement(\"" + measurement_id + "\", \"" + measurement_count + "\");");
 
     refreshTabgroupCSS("Site");
 }
 
-/* Generates a confirmation prompt to delete the given pH. */
-deletepH(String ph_id, String ph_index) {
+/* Generates a confirmation prompt to delete the given measurement. */
+deleteMeasurement(String measurement_id, String measurement_index) {
     showAlert(
         "{Confirm_Deletion}",
-        "{Press_To_Delete} {pH}!",
-        "reallyDeletepH(\"" + ph_id + "\", \"" + ph_index + "\")",
+        "{Press_To_Delete} {Measurement}!",
+        "reallyDeleteMeasurement(\"" + measurement_id + "\", \"" + measurement_index + "\")",
         "doNotDelete()"
     );
 }
 
-/* Deletes the given pH. */
-reallyDeletepH(String ph_id, String ph_index) {
-    deleteArchEnt(ph_id, new DeleteCallback() {
+/* Deletes the given measurement. */
+reallyDeleteMeasurement(String measurement_id, String measurement_index) {
+    deleteArchEnt(measurement_id, new DeleteCallback() {
         onDelete(uuid) {
-            removeContainer("Site/Measurements/pH_Row_" + ph_index);
-            removeContainer("Site/Measurements/pH_Value_Container_" + ph_index);
-            removeContainer("Site/Measurements/Delete_pH_Container_" + ph_index);
-            removeView("Site/Measurements/pH_Value_" + ph_index);
-            removeView("Site/Measurements/Delete_pH_" + ph_index);
+            removeContainer("Site/Measurements/measurement_row_" + measurement_index);
+            removeContainer("Site/Measurements/measurement_value_container_" + measurement_index);
+            removeContainer("Site/Measurements/delete_measurement_container_" + measurement_index);
+            removeView("Site/Measurements/measurement_value_" + measurement_index);
+            removeView("Site/Measurements/delete_measurement_" + measurement_index);
             //showTab("Site/Measurements");
         }
     });
@@ -694,16 +861,16 @@ onEvent(
 onEvent("Project/Map", "show", "renderDynamicMapViews();");
 onEvent("Project/Map/Centre_Map", "click", "centreMap();");
 onEvent("Project/Map/Save_Map_Settings", "click", "saveMapSettings();");
-onEvent("Project/Map/Create_Shape", "click", "createShape();");
+//onEvent("Project/Map/Create_Shape", "click", "createShape();");
 
 // Flag used for onShow tab redirects
-Boolean redirectFlag = false;
-navigateToMap() {
-    redirectFlag = true;
-    showTabGroup("Project");
-}
+//Boolean redirectFlag = false;
+//navigateToMap() {
+    //redirectFlag = true;
+    //showTabGroup("Project");
+//}
 
-onEvent("Project/Start", "show", "print(\"[project onShow] map redirect flag: \" + redirectFlag);if(redirectFlag){showTab(\"Project/Map\");redirectFlag=false;}");
+//onEvent("Project/Start", "show", "print(\"[project onShow] map redirect flag: \" + redirectFlag);if(redirectFlag){showTab(\"Project/Map\");redirectFlag=false;}");
 
 
 /* Renders a plotFromMap or showMap button depending on how many points have been drawn on the map. */
@@ -733,49 +900,54 @@ dataEntryLayerID = null;
 initMap() {
     // Base map layer
     setMapZoom("Project/Map/map", 13.0f);
-    // showBaseMap("Project/Map/map", "base map", "files/data/maps/SydneyStreetmap.tif");
+    showBaseMap("Project/Map/map", "base map", "files/data/maps/SydneyStreetmap.tif");
     // showBaseMap("Project/Map/map", "base map", "files/data/maps/Capricorn.tif");
 
-    showBaseMap("Project/Map/map", "base map", "files/data/maps/Topo_Syd_3857.3857.Tiled.tif");
-    showRasterMap("Project/Map/map", "dem syd", "files/data/maps/dem_syd_3857.3857.Tiled.tif");
-    showRasterMap("Project/Map/map", "mag map syd", "files/data/maps/magmap_syd_3857.3857.Tiled.tif");  
-    showRasterMap("Project/Map/map", "rad map pctk syd", "files/data/maps/radmap_pctk_syd_3857.3857.Tiled.tif");
-    showRasterMap("Project/Map/map", "rad ppmu syd", "files/data/maps/rad_ppmu_syd_3857.3857.Tiled.tif");
-    showRasterMap("Project/Map/map", "rad ppmth syd", "files/data/maps/rad_ppmth_syd_3857.3857.Tiled.tif");
+    //showBaseMap("Project/Map/map", "base map", "files/data/maps/Topo_Syd_3857.3857.Tiled.tif");
+    //showRasterMap("Project/Map/map", "dem syd", "files/data/maps/dem_syd_3857.3857.Tiled.tif");
+    //showRasterMap("Project/Map/map", "mag map syd", "files/data/maps/magmap_syd_3857.3857.Tiled.tif");  
+    //showRasterMap("Project/Map/map", "rad map pctk syd", "files/data/maps/radmap_pctk_syd_3857.3857.Tiled.tif");
+    //showRasterMap("Project/Map/map", "rad ppmu syd", "files/data/maps/rad_ppmu_syd_3857.3857.Tiled.tif");
+    //showRasterMap("Project/Map/map", "rad ppmth syd", "files/data/maps/rad_ppmth_syd_3857.3857.Tiled.tif");
 
-    ps = createPointStyle(10, Color.BLUE, 0.2f, 0.5f);
-    ls = createLineStyle(10, Color.GREEN, 0.05f, 0.3f, null);
+    ps  = createPointStyle(10, Color.BLUE, 0.2f, 0.5f);
+    ls  = createLineStyle(10, Color.GREEN, 0.05f, 0.3f, null);
     pos = createPolygonStyle(10, Color.parseColor("#440000FF"), createLineStyle(10, Color.parseColor("#AA000000"), 0.01f, 0.3f, null));
-    ts = createTextStyle(10, Color.BLACK, 40, Typeface.SANS_SERIF);
+    ts  = createTextStyle(10, Color.BLACK, 40, Typeface.SANS_SERIF);
     
     isEntity = true;
     // Database layers
-    waterQueryName = "Water Samples";
-    waterQuerySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Water Sample'";
-    waterps = createPointStyle(10, Color.BLUE, 0.2f, 0.5f);
-    showDatabaseLayer("Project/Map/map", "Water Samples", isEntity, waterQueryName, waterQuerySql, waterps, ls, pos, ts);
+    queryName = "Site";
+    querySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Site'";
+    ps = createPointStyle(10, Color.BLUE, 0.2f, 0.5f);
+    showDatabaseLayer("Project/Map/map", "Water Samples", isEntity, queryName, querySql, ps, ls, pos, ts);
+
+    //waterQueryName = "Water Samples";
+    //waterQuerySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Water Sample'";
+    //waterps = createPointStyle(10, Color.BLUE, 0.2f, 0.5f);
+    //showDatabaseLayer("Project/Map/map", "Water Samples", isEntity, waterQueryName, waterQuerySql, waterps, ls, pos, ts);
         
-    plantQueryName = "Plant Samples";
-    plantQuerySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Plant Sample'";
-    plantps = createPointStyle(10, Color.GREEN, 0.2f, 0.5f);
-    showDatabaseLayer("Project/Map/map", "Plant Samples", isEntity, plantQueryName, plantQuerySql, plantps, ls, pos, ts);
+    //plantQueryName = "Plant Samples";
+    //plantQuerySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Plant Sample'";
+    //plantps = createPointStyle(10, Color.GREEN, 0.2f, 0.5f);
+    //showDatabaseLayer("Project/Map/map", "Plant Samples", isEntity, plantQueryName, plantQuerySql, plantps, ls, pos, ts);
     
-    soilQueryName = "Soil Samples";
-    soilQuerySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Soil Sample'";
-    soilps = createPointStyle(10, Color.BLACK, 0.2f, 0.5f);
-    showDatabaseLayer("Project/Map/map", "Soil Samples", isEntity, soilQueryName, soilQuerySql, soilps, ls, pos, ts);
+    //soilQueryName = "Soil Samples";
+    //soilQuerySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Soil Sample'";
+    //soilps = createPointStyle(10, Color.BLACK, 0.2f, 0.5f);
+    //showDatabaseLayer("Project/Map/map", "Soil Samples", isEntity, soilQueryName, soilQuerySql, soilps, ls, pos, ts);
     
-    rockQueryName = "Rock Samples";
-    rockQuerySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Rock Sample'";
-    rockps = createPointStyle(10, Color.RED, 0.2f, 0.5f);   
-    showDatabaseLayer("Project/Map/map", "Rock Samples", isEntity, rockQueryName, rockQuerySql, rockps, ls, pos, ts);
+    //rockQueryName = "Rock Samples";
+    //rockQuerySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Rock Sample'";
+    //rockps = createPointStyle(10, Color.RED, 0.2f, 0.5f);   
+    //showDatabaseLayer("Project/Map/map", "Rock Samples", isEntity, rockQueryName, rockQuerySql, rockps, ls, pos, ts);
     
-    notesQueryName = "Notes";
-    notesQuerySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Note'";
-    notesps = createPointStyle(10, Color.YELLOW, 0.2f, 0.5f);
-    notesls = createLineStyle(10, Color.YELLOW, 0.05f, 0.3f, null);
-    notespos = createPolygonStyle(10, Color.YELLOW, createLineStyle(10, Color.parseColor("#AA000000"), 0.01f, 0.3f, null));
-    showDatabaseLayer("Project/Map/map", "Shape Notes", isEntity, notesQueryName, notesQuerySql, notesps, notesls, notespos, ts);
+    //notesQueryName = "Notes";
+    //notesQuerySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Note'";
+    //notesps = createPointStyle(10, Color.YELLOW, 0.2f, 0.5f);
+    //notesls = createLineStyle(10, Color.YELLOW, 0.05f, 0.3f, null);
+    //notespos = createPolygonStyle(10, Color.YELLOW, createLineStyle(10, Color.parseColor("#AA000000"), 0.01f, 0.3f, null));
+    //showDatabaseLayer("Project/Map/map", "Shape Notes", isEntity, notesQueryName, notesQuerySql, notesps, notesls, notespos, ts);
     // Canvas layers
     dataEntryLayerID = createCanvasLayer("Project/Map/map", "Data Entry Layer");
     setSelectedLayer("Project/Map/map", "Data Entry Layer");
@@ -806,64 +978,64 @@ saveMapSettings() {
     saveMapViewConfiguration("Project/Map/map", file, "showToast(\"{Saved_Map_Configuration}\")");
 }
 
-shapeUUID = null;
-onEvent("Shape/Shape_Note", "show", "saveShape();");
+//shapeUUID = null;
+//onEvent("Shape/Shape_Note", "show", "saveShape();");
 
-/* Generates a confirmation prompt to delete the given shape note. */
-deleteShape(String shapeID) {
-    showAlert("{Confirm_Deletion}", "{Press_To_Delete} {Shape_Note}!", "reallyDeleteShape(\"" + shapeID + "\")", "doNotDelete()");
-}
+//[> Generates a confirmation prompt to delete the given shape note. <]
+//deleteShape(String shapeID) {
+    //showAlert("{Confirm_Deletion}", "{Press_To_Delete} {Shape_Note}!", "reallyDeleteShape(\"" + shapeID + "\")", "doNotDelete()");
+//}
 
-/* Deletes the given Shape. */
-reallyDeleteShape(String shapeID) {
-    deleteArchEnt(shapeID, new DeleteCallback() {
-        onDelete(uuid) {
-            shapeID = null;
-            shapeUUID = shapeID;
-            showToast("{Shape_Note_Deleted}");
-            navigateToMap();
-        }
-    });
-}
+//[> Deletes the given Shape. <]
+//reallyDeleteShape(String shapeID) {
+    //deleteArchEnt(shapeID, new DeleteCallback() {
+        //onDelete(uuid) {
+            //shapeID = null;
+            //shapeUUID = shapeID;
+            //showToast("{Shape_Note_Deleted}");
+            //navigateToMap();
+        //}
+    //});
+//}
 
-/* Auto saves the shape note entity. */
-saveShape() {
-    List geolist = getGeometryList("Project/Map/map", dataEntryLayerID);
-    print("[saveShape()] saving with geolist: " + geolist);
-    Boolean enable_autosave = true;
-    saveTabGroup("Shape", shapeUUID, geolist, null, new SaveCallback() {
-        onSave(uuid, newRecord) {
-            shapeUUID = uuid;
-            print("[saveShape()] Autosaved shape uuid: "+shapeUUID);
-            // Clear the data entry layer
-            if (newRecord && geoList != null && geolist.size() != 0) {
-                for (geom : geolist) {
-                    print("Geometry cleared:" + geom.userData.geomId);
-                    clearGeometry("Project/Map/map", geom.userData.geomId);
-                }
-                geoList = getGeometryList("Project/Map/map", dataEntryLayerID);
-                print("[saveShape()] Cleared geometry list: " + geoList);
-            }
-        }
-        onError(message) {
-            showToast(message);
-        }  
-    }, enable_autosave);
-}
+//[> Auto saves the shape note entity. <]
+//saveShape() {
+    //List geolist = getGeometryList("Project/Map/map", dataEntryLayerID);
+    //print("[saveShape()] saving with geolist: " + geolist);
+    //Boolean enable_autosave = true;
+    //saveTabGroup("Shape", shapeUUID, geolist, null, new SaveCallback() {
+        //onSave(uuid, newRecord) {
+            //shapeUUID = uuid;
+            //print("[saveShape()] Autosaved shape uuid: "+shapeUUID);
+            //// Clear the data entry layer
+            //if (newRecord && geoList != null && geolist.size() != 0) {
+                //for (geom : geolist) {
+                    //print("Geometry cleared:" + geom.userData.geomId);
+                    //clearGeometry("Project/Map/map", geom.userData.geomId);
+                //}
+                //geoList = getGeometryList("Project/Map/map", dataEntryLayerID);
+                //print("[saveShape()] Cleared geometry list: " + geoList);
+            //}
+        //}
+        //onError(message) {
+            //showToast(message);
+        //}  
+    //}, enable_autosave);
+//}
 
-/* Saves drawn shapes with an attatched note. */
-createShape() {
-    shapeUUID = null;
-    print("[createShape()] DataEntryLayer ID: " + dataEntryLayerID);
-    List geolist = getGeometryList("Project/Map/map", dataEntryLayerID);
-    print("[createShape()] geolist: " + geolist);
-    if (geolist == null || geolist.size() == 0) {
-        showWarning("{Warning}", "{Error_No_Shapes_Present}");
-    } else {
-        newTabGroup("Shape");
-        print("[createShape()] new shape tab group");
-    }
-}
+//[> Saves drawn shapes with an attatched note. <]
+//createShape() {
+    //shapeUUID = null;
+    //print("[createShape()] DataEntryLayer ID: " + dataEntryLayerID);
+    //List geolist = getGeometryList("Project/Map/map", dataEntryLayerID);
+    //print("[createShape()] geolist: " + geolist);
+    //if (geolist == null || geolist.size() == 0) {
+        //showWarning("{Warning}", "{Error_No_Shapes_Present}");
+    //} else {
+        //newTabGroup("Shape");
+        //print("[createShape()] new shape tab group");
+    //}
+//}
 
 Boolean arrivedFromSample = false;
 
@@ -896,7 +1068,8 @@ renderDynamicMapViews() {
 
 /* Returns to the sample from the map after recording a point. */
 returnToSample() {
-    String tabgroup = getSampleTypePath();
+    //String tabgroup = getSampleTypePath();
+    String tabgroup = "Project";
 
     // Get the geometry from the data layer and proceed only if the geometry is a single point.
     List geolist = getGeometryList("Project/Map/map", dataEntryLayerID);
@@ -914,7 +1087,8 @@ returnToSample() {
     }
 
     // Save the archent with the point as the entity geometry
-    saveArchEnt(currentSampleUUID, getSampleType(), geolist, null, new SaveCallback() {
+    entName = "Point";
+    saveArchEnt(entity_id, entName, geolist, null, new SaveCallback() {
         onSave(uuid, newRecord) {
             print("[returnToSample()] Saved geometry: " + geolist);
             fillInGPS();
@@ -968,11 +1142,12 @@ setSyncEnabled(true);
 // onEvent("control/control/", "show", "populateControlTabGroup()");
 // onEvent("control/control/buttonNewRecord",  "click", "createEntityAndPopulateBettong()");
 // onEvent("control/control/savedRecords", "click", "loadEntityAndPopulateBettong()");
-onEvent("Project/Main"                        , "show"  , "addSampleNavigation(); populateMain(); loadSites(); ");
-onEvent("Project/Main/Record_Site"            , "click" , "createAndPopulateSite(); ");
-onEvent("Site"                                , "show"  , "saveSite()");
+onEvent("Project"                             , "show"  , "removeNavigationButtons();");
+onEvent("Project/Main"                        , "show"  , "populateMain(); loadSites(); ");
+onEvent("Project/Main/Record_Site"            , "click" , "createNewSite(); ");
+onEvent("Site"                                , "show"  , "autoSaveSite(); initNewSite(); addNavigationButtons(); ");
 onEvent("Site/Photolog/Record_External_Photo" , "click" , "showTabGroup(\"Photolog\")");
-onEvent("Site/Site_Recording/Take_From_GPS"   , "click" , "fillInGPS()");
+onEvent("Site/Site_Recording/Take_From_GPS"   , "click" , "takePoint()");
 onEvent("Users/Login"                         , "show"  , "loadUsers()");
 onEvent("Users/Login/Author_List"             , "click" , "login()");
 

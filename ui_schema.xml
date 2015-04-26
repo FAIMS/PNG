@@ -11,9 +11,12 @@
             <even>
               <layout_weight/>
             </even>
-            <large>
+            <heavy>
               <layout_weight/>
-            </large>
+            </heavy>
+            <light>
+              <layout_weight/>
+            </light>
           </style>
           <user>
             <usertab>
@@ -170,6 +173,18 @@
           <label>1</label>
         </input>
       </group>
+      <group ref="heavy">
+        <label/>
+        <input ref="layout_weight">
+          <label>4</label>
+        </input>
+      </group>
+      <group ref="light">
+        <label/>
+        <input ref="layout_weight">
+          <label>1</label>
+        </input>
+      </group>
     </group>
     <group ref="Users">
       <label>{Users}</label>
@@ -245,12 +260,12 @@
               <label>{Save_Map_Settings}</label>
             </trigger>
           </group>
-          <group faims_style="even" ref="child3">
-            <label/>
-            <trigger ref="Create_Shape" faims_style_class="faims-blue">
-              <label>{Create_Shape}</label>
-            </trigger>
-          </group>
+          <!--<group faims_style="even" ref="child3">-->
+            <!--<label/>-->
+            <!--<trigger ref="Create_Shape" faims_style_class="faims-blue">-->
+              <!--<label>{Create_Shape}</label>-->
+            <!--</trigger>-->
+          <!--</group>-->
         </group>
       </group>
     </group>
