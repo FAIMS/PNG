@@ -126,8 +126,13 @@ addActionBarItem("external_gps", new ToggleActionButtonCallback() {
 /******************************************************************************/
 
 createNewSite() {
-    siteCode = getFieldValue("Project/Main/Site_Code");
-    if (isNull(siteCode)) {
+    siteNumber = getFieldValue("Project/Main/Site_Number");
+    siteCode   = getFieldValue("Project/Main/Site_Code");
+    if (siteNumber.equals("")) {
+        showWarning("{Warning}", "{Err_Site_Number}");
+        return;
+    }
+    if (siteCode.equals("")) {
         showWarning("{Warning}", "{Err_Site_Code}");
         return;
     }
@@ -619,10 +624,17 @@ loadSite() {
 /*                                  PHOTOLOG                                  */
 /******************************************************************************/
 
+doWarnUser     = true;
+onSavePhotolog = "\"cancelTabGroup(\\\"Photolog\\\", false); showTab(\\\"Site/Photolog\\\"); \"";
+//onSavePhotolog = "\"\"";
 onEvent("Photolog"                              , "show"  , "addPhotologNavigation();");
-onFocus("Photolog/Photolog/ID"                  , null    , "activateAutoSavePhotolog();");
-onEvent("Photolog/Photolog/Photo_Back"          , "click" , "cancelTabGroup(\"Photolog\", false); showTab(\"Site/Photolog\");");
+onEvent("Photolog/Photolog/Photo_Back"          , "click" , "savePhotolog(" + doWarnUser + ", " + onSavePhotolog + ")");
+onEvent("Site/Photolog"                         , "show"  , "loadRelatedPhotologs(entityId)");
 onEvent("Site/Photolog/List_Of_External_Photos" , "click" , "loadPhotolog();");
+onEvent("Site/Photolog/Record_External_Photo"   , "click" , "newPhotolog()");
+onFocus("Photolog/Photolog/ID"                  , null    , "savePhotolog()");
+onFocus("Photolog/Photolog/Timestamp"           , null    , "savePhotolog()");
+onFocus("Photolog/Photolog/Note"                , null    , "savePhotolog()");
 
 /* Populates the photolog list with the existing photologs linked to the given sample ID. */
 loadRelatedPhotologs(String related_sample_id) {
@@ -664,8 +676,22 @@ newPhotolog() {
     setTimestamp("Photolog/Photolog/Timestamp");
 }
 
+savePhotolog(doWarnUser, callbackEval) {
+    if (!doWarnUser) {
+        savePhotolog();
+        return;
+    }
+
+    id = getFieldValue("Photolog/Photolog/ID");
+    if (id.equals("")) {
+        showAlert("{Warning}", "{Photolog_No_ID}", "", callbackEval);
+    } else {
+        eval(callbackEval);
+    }
+}
 savePhotolog() {
-    if(!isNull(photolog_id) || isNull(getFieldValue("Photolog/Photolog/ID"))) return;
+    //if(!isNull(photolog_id) || isNull(getFieldValue("Photolog/Photolog/ID"))) return;
+    if(isNull(getFieldValue("Photolog/Photolog/ID"))) return;
 
     enable_autosave = true;
     saveTabGroup("Photolog", photolog_id, null, null, new SaveCallback() {
@@ -1117,10 +1143,6 @@ onEvent("Project/Main"                        , "show"  , "populateMain(); loadS
 onEvent("Project/Main/Record_Site"            , "click" , "createNewSite(); ");
 onEvent("Project/Records/All_Site_Records"    , "click" , "loadSite();");
 onEvent("Site"                                , "show"  , "autoSaveSite(); initNewSite(); addNavigationButtons(); ");
-onEvent("Site/Photolog"                       , "show"  , "loadRelatedPhotologs(entityId)");
-onEvent("Site/Photolog/Record_External_Photo" , "click" , "newPhotolog()");
-onEvent("Site/Photolog/Record_External_Photo" , "click" , "showTabGroup(\"Photolog\")");
 onEvent("Site/Site_Recording/Take_From_GPS"   , "click" , "takePoint()");
 onEvent("Users/Login"                         , "show"  , "loadUsers()");
 onEvent("Users/Login/Author_List"             , "click" , "login()");
-onFocus("Photolog/Photolog/ID"                , null    , "savePhotolog()");
