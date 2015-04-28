@@ -234,6 +234,8 @@ fillInGPS() {
             setFieldValue(tabgroup + "Longitude" , result.get(1));
             setFieldValue(tabgroup + "Northing"  , result.get(2));
             setFieldValue(tabgroup + "Easting"   , result.get(3));
+            setFieldValue(tabgroup + "Accuracy"  , getGPSEstimatedAccuracy());
+            setFieldValue(tabgroup + "Heading"   , getGPSHeading());
         }
     });
 }
