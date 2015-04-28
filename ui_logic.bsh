@@ -265,6 +265,41 @@ addNavigationButtons() {
                 return;
             }
 
+            dupeSample3();
+
+            //fetchArchEnt(entityId, new FetchCallback() {
+                //onFetch(result) {
+                    //entity = result;
+                    //print(entity);
+
+                    //// useful methods on entity
+                    //id = entity.getId();
+                    //type = entity.getType();
+                    //attributes = entity.getAttributes();
+                    //geometry_list = entity.getGeometryList();
+                    //has_conflict = entity.isForked();
+                //}
+
+                //onError(message) {
+                    //showToast(message);
+                //}
+            //});
+
+            // 1. Save old entityId.
+            // 2. Set entityId = null
+            // 3. Trigger autosave on tabGroup. A new entity will be made.
+            // 4. Copy each Measurement from the old entity.
+            // 5. Copy each Photolog from the old entity.
+            // 6. Remove geo data (geometry, lat, long, etc) from new entity?
+            // 7. Increment the Site Number in the new entity.
+            // 8. Increment the Site Number in the "Main" tab.
+            // 9. Warn user geo data wasn't dup'd
+
+            //entityIdOld = entityId;
+            //entityId    = null;
+
+
+
             //// This geometry will be added to the new entity
             //geometry = null;
 
@@ -314,8 +349,141 @@ addNavigationButtons() {
     };
 
     addNavigationButton("new"       , callbackButtonNew       , "success");
-    addNavigationButton("duplicate" , callbackButtonDuplicate , "primary");
+    //addNavigationButton("duplicate" , callbackButtonDuplicate , "primary");
     addNavigationButton("delete"    , callbackButtonDelete    , "danger");
+}
+
+List getSampleDateAttributeList() {
+    attributes = createAttributeList();
+    print("[getSampleDateAttributeList()] created an attribute list: " + attributes);
+    sampleDate = new java.text.SimpleDateFormat("ddMMMyy").format(new Date());
+    print("[getSampleDateAttributeList()] grabbed the date: " + sampleDate);
+    entityAttribute = createEntityAttribute("Created_At", null, null, sampleDate, null);
+    print("[getSampleDateAttributeList()] created the entity attribute: " + entityAttribute);
+    attributes.add(entityAttribute);
+    print("[getSampleDateAttributeList()] added to the attribute list, the attributes: " + attributes);
+    return attributes;
+}
+
+/* Duplicates the current sample excluding any attachments or pictures */
+//oldSampleUUID = null;
+
+dupeSample3() {
+    // Validate the entered sample prefix and ID before duplicating the sample and using the prefix and ID from the project start tab.
+    //if (!validSamplePrefix() || !validStartingSampleID()) {       
+        //print("[dupeSample2()] sample prefix or starting id not valid");
+        //showTabGroup("Project");
+        //showTab("Project/Start");
+        //return;
+    //} 
+
+    // cancel the tabgroup and gather neccessary data before proceeding
+    tabgroup = "Site";
+    cancelTabGroup(tabgroup, false);
+    oldEntityId = entityId;
+    entityId    = null;
+    //newSampleFlag = false;
+    print("[dupeSample2()] Cancelled tabgroup and set entityId to null");
+
+    // set the values of any dynamic views using an attribute list
+    attributes = getSampleDateAttributeList();
+
+    addAttribute(attributes , "Site_Code"                 , "/Site/Site_Recording/Site_Code"                 , true );
+    addAttribute(attributes , "Site_Number"               , "/Site/Site_Recording/Site_Number"               , true );
+    addAttribute(attributes , "Author"                    , "/Site/Site_Recording/Author"                    , true );
+    addAttribute(attributes , "Team"                      , "/Site/Site_Recording/Team"                      , true );
+    addAttribute(attributes , "Local_Site_Name"           , "/Site/Site_Recording/Local_Site_Name"           , true );
+    addAttribute(attributes , "Site_Type"                 , "/Site/Site_Recording/Site_Type"                 , true );
+    addAttribute(attributes , "Site_Significance"         , "/Site/Site_Recording/Site_Significance"         , true );
+    addAttribute(attributes , "Land_Owners"               , "/Site/Site_Recording/Land_Owners"               , true );
+    addAttribute(attributes , "Informant_Details"         , "/Site/Site_Recording/Informant_Details"         , true );
+    addAttribute(attributes , "Elevation_Absolute"        , "/Site/Site_Recording/Elevation_Absolute"        , true );
+    addAttribute(attributes , "Elevation_Range"           , "/Site/Site_Recording/Elevation_Range"           , true );
+    addAttribute(attributes , "Landscape"                 , "/Site/Site_Recording/Landscape"                 , true );
+    addAttribute(attributes , "Vegetation"                , "/Site/Site_Recording/Vegetation"                , true );
+    addAttribute(attributes , "Ground_Visibility"         , "/Site/Site_Recording/Ground_Visibility"         , true );
+    addAttribute(attributes , "Current_Land_Use"          , "/Site/Site_Recording/Current_Land_Use"          , true );
+    addAttribute(attributes , "Sampling_Method"           , "/Site/Site_Recording/Sampling_Method"           , true );
+    addAttribute(attributes , "Estimated_Dimensions"      , "/Site/Site_Recording/Estimated_Dimensions"      , true );
+    addAttribute(attributes , "Cultural_Material_Present" , "/Site/Site_Recording/Cultural_Material_Present" , true );
+    addAttribute(attributes , "Surface_Geomorphology"     , "/Site/Site_Recording/Surface_Geomorphology"     , true );
+    addAttribute(attributes , "Subsurface_Geomorphology"  , "/Site/Site_Recording/Subsurface_Geomorphology"  , true );
+    addAttribute(attributes , "Disturbance"               , "/Site/Site_Recording/Disturbance"               , true );
+    addAttribute(attributes , "Site_Description"          , "/Site/Site_Recording/Site_Description"          , true );
+    addAttribute(attributes , "General_Notes"             , "/Site/Site_Recording/General_Notes"             , true );
+    addAttribute(attributes , "Recommendation"            , "/Site/Site_Recording/Recommendation"            , true );
+
+    //addMultSelectionAttribute(attributes,"Soil Texture", "Soil_Sample/Basic_Info/Soil_Texture");
+
+    // Autoincrement the sample starting ID
+    String startingID = getFieldValue("Site/Site_Recording/Site_Number");
+    saveSiteStartingId(Integer.toString(Integer.parseInt(startingID) + 1)); // Increment the starting sample ID
+
+    // duplicate any database entity relationships (such as sample and photolog, water sample and ph/eh relationship)
+
+
+    // force an initial save of the duplicate sample
+    saveArchEnt(entityId, tabgroup, null, attributes, new SaveCallback() {
+        onSave(uuid, newRecord) {
+            entityId = uuid;
+            print("[dupeSample2()] Saved sample uuid: "+entityId);
+            keepTabGroupChanges(tabgroup);
+
+            duplicateRelns(oldEntityId);
+            loadSite();
+            showToast(tabgroup + " {Duplicated}");
+            String duplicationNotice = "Notice: The sample Latitude, " +
+                "Longitude, Northing and Easting has not been duplicated. " +
+                "Use the {Take_GPS} button to repopulate these fields.";
+            showToast(duplicationNotice);
+        }
+        onError(message) {
+            Log.v("dupeSample3", message);
+        }
+    });
+}
+
+duplicateRelns(oldSampleUUID){
+    fetchAll("select a.uuid "+
+"from latestnondeletedaentreln a join latestnondeletedaentreln b using (relationshipid) join latestnondeletedarchent ae on (a.uuid = ae.uuid)"+
+"where a.uuid != b.uuid "+
+"and b.uuid = "+ oldSampleUUID +";", new FetchCallback() {
+            onFetch(uuid_list) {
+                print("[duplicatePhEh()] pheh attribute list: " + uuid_list);
+
+                for (uuids : uuid_list){
+                    print("[duplicatePhEh()] pheh attribute list: " + uuids);
+                    // So, passing uuids into this REALLY doesn't work. WTF. 
+                    fetchAll("select attributename, freetext, vocabid, measure, certainty, aenttypename, relntypename  "+ 
+                            "  from latestnondeletedaentvalue  " +
+                            "  join attributekey using (attributeid)  " +
+                            "  join latestnondeletedarchent using (uuid) " +
+                            "  join latestnondeletedaentreln using (uuid) " +
+                            "  join latestnondeletedrelationship using (relationshipid) " +
+                            "  join relntype using (relntypeid) " +
+                            "  join aenttype using (aenttypeid) " +
+                            "  where uuid = '"+uuids.get(0)+"';", 
+                             new FetchCallback() {
+                                onFetch(duplicate_list) {
+                                    print("[duplicatePhEh()] pheh duplicate list: " + duplicate_list);
+                                    List dupedAttributes = createAttributeList();
+                                    for (attribute : duplicate_list){
+                                        print(attribute.get(6) + " -- " + attribute.get(5) + " -- " + attribute);
+                                        dupedAttributes.add(createEntityAttribute(attribute.get(0), attribute.get(1), attribute.get(2), attribute.get(3), attribute.get(4)));
+
+                                    }
+                                    saveArchEnt(null, duplicate_list.get(0).get(5), null, dupedAttributes, new SaveCallback() {
+                                        onSave(uuid, newRecord) {
+                                            print("[duplicated] " + uuid + dupedAttributes);
+                                            saveEntitiesToRel(duplicate_list.get(0).get(6), entityId, uuid);
+                                        }  
+                                    });   
+
+                             }});
+                }
+                
+            }});
+   
 }
 
 /* Generates a confirmation prompt for deleting the current sample. */
@@ -927,6 +1095,7 @@ makeVocab(String type, String path, String attrib){
 
 startInternalGPS();
 setSyncEnabled(true);
+setFileSyncEnabled(true);
 
 // These should go in functions so we can see what's populating what.
 makeVocab("CheckBoxGroup" , "Site/Site_Recording/Cultural_Material_Present" , "Cultural_Material_Present");
