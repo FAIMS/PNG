@@ -188,9 +188,9 @@
     </group>
     <group ref="Users">
       <label>{Users}</label>
-      <group ref="Login">
+      <group ref="Login" faims_scrollable="false">
         <label>{Login}</label>
-        <select1 ref="Author_List" appearance="compact">
+        <select1 ref="Author_List" appearance="compact" faims_style_class="record_list">
           <label>{Author_List}</label>
           <item>
             <label>placeholder</label>
@@ -206,7 +206,7 @@
         <input ref="Team_Members">
           <label>{Team_Members}</label>
         </input>
-        <input ref="Author">
+        <input ref="Author" faims_read_only="true">
           <label>{Author}</label>
         </input>
         <group ref="Col_Group_1" faims_style="orientation">
@@ -231,7 +231,7 @@
           <label>{GPS_Diagnostics}</label>
         </input>
       </group>
-      <group ref="Records">
+      <group ref="Records" faims_scrollable="false">
         <label>{Records}</label>
         <select1 ref="All_Site_Records" appearance="compact" faims_style_class="record_list">
           <label>{All_Site_Records}</label>
@@ -288,13 +288,13 @@
             </input>
           </group>
         </group>
-        <input ref="Created_At" faims_attribute_name="Created_At" faims_attribute_type="measure" faims_read_only="true" faims_annotation="false">
+        <input ref="Created_At" faims_attribute_name="Created_At" faims_attribute_type="measure" faims_read_only="true" faims_annotation="false" faims_certainty="false">
           <label>{Created_At}</label>
         </input>
-        <input ref="Author" faims_attribute_name="Author" faims_attribute_type="measure" faims_read_only="true" faims_annotation="false">
+        <input ref="Author" faims_attribute_name="Author" faims_attribute_type="measure" faims_read_only="true" faims_annotation="false" faims_certainty="false">
           <label>{Author}</label>
         </input>
-        <input ref="Team" faims_attribute_name="Team" faims_attribute_type="measure" faims_read_only="true" faims_annotation="false">
+        <input ref="Team" faims_attribute_name="Team" faims_attribute_type="measure" faims_read_only="true" faims_annotation="false" faims_certainty="false">
           <label>{Team}</label>
         </input>
         <input ref="Local_Site_Name" faims_attribute_name="Local_Site_Name" faims_attribute_type="measure" faims_certainty="true" faims_annotation="true">

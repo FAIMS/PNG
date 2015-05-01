@@ -76,6 +76,7 @@ addActionBarItem("internal_gps", new ToggleActionButtonCallback() {
     }
     actionOn() {
         stopGPS();
+        updateGPSStatus();
         showToast("{GPS_Disabled}");
     }
     isActionOff() {
@@ -89,6 +90,7 @@ addActionBarItem("internal_gps", new ToggleActionButtonCallback() {
             stopGPS();
         }
         startInternalGPS();
+        updateGPSStatus();
         showToast("{GPS_Enabled}");
     }
 });
@@ -99,6 +101,7 @@ addActionBarItem("external_gps", new ToggleActionButtonCallback() {
     }
     actionOn() {
         stopGPS();
+        updateGPSStatus();
         showToast("{GPS_Disabled}");
     }
     isActionOff() {
@@ -118,11 +121,12 @@ addActionBarItem("external_gps", new ToggleActionButtonCallback() {
             showToast("{Please_Enable_Bluetooth}");
             this.isActionOff();
         }
+        updateGPSStatus();
     }
 });
 
 /******************************************************************************/
-/*                                 ACTIONBAR                                  */
+/*                             SITE (sort of...)                              */
 /******************************************************************************/
 
 createNewSite() {
@@ -132,7 +136,7 @@ createNewSite() {
         showWarning("{Warning}", "{Err_Site_Number}");
         return;
     }
-    if (siteCode.equals("")) {
+    if (siteCode.length() != 3) {
         showWarning("{Warning}", "{Err_Site_Code}");
         return;
     }
@@ -195,11 +199,16 @@ setTimestamp(String path) {
 }
 
 takePoint() {
-    Object pos = getGPSPositionProjected();
+    Object pos = getGPSPosition();
+    if (!isExternalGPSOn() && !isInternalGPSOn()) {
+        showToast("{Err_Con}");
+        return;
+    }
     if (pos == null) {
         showToast("{GPS_Not_Initialised}");
         return;
     }
+    Object pos = getGPSPositionProjected();
 
     Double northing = pos.getLatitude();
     Double easting  = pos.getLongitude();
@@ -214,6 +223,9 @@ takePoint() {
         onSave(uuid, newRecord) {
             print("[takePoint()] Added geometry: " + geolist);
             fillInGPS();
+        }
+        onError(message) {
+            Log.d("[takePoint()] Error: ", message);
         }
     });
 }
@@ -925,7 +937,7 @@ reallyDeleteMeasurement(String measurement_id, String measurement_index) {
             removeContainer("Site/Measurements/delete_measurement_container_" + measurement_index);
             removeView("Site/Measurements/measurement_value_" + measurement_index);
             removeView("Site/Measurements/delete_measurement_" + measurement_index);
-            //showTab("Site/Measurements");
+            showToast("{Measurement_Deleted}");
         }
     });
 }
@@ -960,9 +972,9 @@ onEvent(
 /******************************************************************************/
 /*                                    MAP                                     */
 /******************************************************************************/
-onEvent("Project/Map", "show", "renderDynamicMapViews();");
-onEvent("Project/Map/Centre_Map", "click", "centreMap();");
-onEvent("Project/Map/Save_Map_Settings", "click", "saveMapSettings();");
+onEvent("Project/Map"                   , "show"  , "renderDynamicMapViews();");
+onEvent("Project/Map/Centre_Map"        , "click" , "centreMap();");
+onEvent("Project/Map/Save_Map_Settings" , "click" , "saveMapSettings();");
 
 /* Saves the sample archent with geometry equal to the single point drawn on the map. */
 getPointFromMap() {
@@ -976,8 +988,9 @@ dataEntryLayerID = null;
 /* Initialises the map. */
 initMap() {
     // Base map layer
-    setMapZoom("Project/Map/map", 13.0f);
-    showBaseMap("Project/Map/map", "base map", "files/data/maps/SydneyStreetmap.tif");
+    mapPath = "Project/Map/map";
+    setMapZoom(mapPath, 13.0f);
+    showBaseMap(mapPath, "base map", "files/data/maps/SydneyStreetmap.tif");
 
     ps  = createPointStyle(10, Color.BLUE, 0.2f, 0.5f);
     ls  = createLineStyle(10, Color.GREEN, 0.05f, 0.3f, null);
@@ -985,15 +998,16 @@ initMap() {
     ts  = createTextStyle(10, Color.BLACK, 40, Typeface.SANS_SERIF);
 
     // Database layers
+    dbLayerName = "Sites";
     isEntity = true;
     queryName = "Site";
     querySql = "SELECT uuid, aenttimestamp FROM latestNonDeletedArchEnt join aenttype using (aenttypeid) where aenttypename = 'Site'";
     ps = createPointStyle(10, Color.BLUE, 0.2f, 0.5f);
-    showDatabaseLayer("Project/Map/map", "Water Samples", isEntity, queryName, querySql, ps, ls, pos, ts);
+    showDatabaseLayer(mapPath, dbLayerName, isEntity, queryName, querySql, ps, ls, pos, ts);
 
     // Canvas layers
-    dataEntryLayerID = createCanvasLayer("Project/Map/map", "Data Entry Layer");
-    setSelectedLayer("Project/Map/map", "Data Entry Layer");
+    dataEntryLayerID = createCanvasLayer(mapPath, "Data Entry Layer");
+    setSelectedLayer(mapPath, "Data Entry Layer");
     loadMapSettings();
     print("[initMap()] Finished Initialising the Map.");
 }
@@ -1129,6 +1143,7 @@ setFileSyncEnabled(true);
 makeVocab("CheckBoxGroup" , "Site/Site_Recording/Cultural_Material_Present" , "Cultural_Material_Present");
 makeVocab("DropDown"      , "Site/Site_Recording/Current_Land_Use"          , "Current_Land_Use");
 makeVocab("DropDown"      , "Site/Site_Recording/Disturbance"               , "Disturbance");
+makeVocab("DropDown"      , "Site/Site_Recording/Elevation_Range"           , "Elevation_Range");
 makeVocab("DropDown"      , "Site/Site_Recording/Ground_Visibility"         , "Ground_Visibility");
 makeVocab("DropDown"      , "Site/Site_Recording/Landscape"                 , "Landscape");
 makeVocab("DropDown"      , "Site/Site_Recording/Sampling_Method"           , "Sampling_Method");

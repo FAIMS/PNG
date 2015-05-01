@@ -16,15 +16,15 @@
   <ArchaeologicalElement name="Site">
     <description></description>
     <property name="Site_Code" type="freetext" isIdentifier="true">
-      <description/>
+      <description>Three letter code will determine whether site is recorded in Simbai valley or Kaironk valley.</description>
       <formatString><![CDATA[$2]]></formatString>
     </property>
     <property name="Site_Number" type="freetext" isIdentifier="true">
-      <description/>
+      <description>This is Site number, which is auto-incremented by 1 by FAIMS system upon record creation.</description>
       <formatString><![CDATA[$2]]></formatString>
     </property>
     <property name="Created_At" type="freetext">
-      <description/>
+      <description>Timestamp is useful for correlating captured digital data with written notes after the fieldwork. Automatic input</description>
     </property>
     <property name="Author" type="freetext">
       <description/>
@@ -33,10 +33,10 @@
       <description/>
     </property>
     <property name="Local_Site_Name" type="freetext">
-      <description/>
+      <description>Site name in local language, Tok Pisin, and/or English.</description>
     </property>
     <property name="Site_Type" type="enum">
-      <description/>
+      <description>Basic category for type of site.</description>
       <lookup>
         <term> {Ethnographic}
           <description/>
@@ -56,7 +56,7 @@
       </lookup>
     </property>
     <property name="Site_Significance" type="enum">
-      <description/>
+      <description>Denote the site's potential for excavation - potential for addressing our research objectives.</description>
       <lookup>
         <term> {None}
           <description/>
@@ -73,10 +73,10 @@
       </lookup>
     </property>
     <property name="Land_Owners" type="freetext">
-      <description/>
+      <description>Name of individual/s who own the land where site recorded.</description>
     </property>
     <property name="Informant_Details" type="freetext">
-      <description/>
+      <description>Name of individual/s who took us to the site, or has information about the site.</description>
     </property>
     <property name="Latitude" type="freetext">
       <description/>
@@ -97,10 +97,24 @@
       <description/>
     </property>
     <property name="Elevation_Absolute" type="freetext">
-      <description/>
+      <description>Elevation based on handheld GPS reading.</description>
     </property>
     <property name="Elevation_Range" type="freetext">
-      <description/>
+      <description>If you do not have an absolute MASL reading, please select a suitable range from a Topo map.</description>
+      <lookup>
+        <term> {1000_1100}
+          <description/>
+        </term>
+        <term> {1100_1200}
+          <description/>
+        </term>
+        <term> {1200_1300}
+          <description/>
+        </term>
+        <term> {1300_1400}
+          <description/>
+        </term>
+      </lookup>
     </property>
     <property name="Landscape" type="enum">
       <description/>
@@ -209,7 +223,7 @@
       </lookup>
     </property>
     <property name="Estimated_Dimensions" type="freetext">
-      <description/>
+      <description>Rough estimate of site area.</description>
     </property>
     <property name="Cultural_Material_Present" type="enum">
       <description/>
@@ -267,10 +281,10 @@
       </lookup>
     </property>
     <property name="Subsurface_Geomorphology" type="freetext">
-      <description/>
+      <description>Describe the sub surface geomorphology. eg. 0-10cm, brown soil, 10-20cm: yellow clay. 20cm: schistose bedrock.</description>
     </property>
     <property name="Disturbance" type="enum">
-      <description/>
+      <description>Please gauge significance of the site. Garden activity, animal burrowing, natural erosion etc may have destroyed sub-surface cultural deposit.</description>/
       <lookup>
         <term> {Undisturbed}
           <description/>
@@ -290,10 +304,10 @@
       <description/>
     </property>
     <property name="General_Notes" type="freetext">
-      <description/>
+      <description>Elaborate on any of the categories.</description>
     </property>
     <property name="Recommendation" type="freetext">
-      <description/>
+      <description>Make a recommendation about what work should be undertaken at the site in the future.</description>
     </property>
 
     <property name="Photos" type="file" file="true" thumbnail="true">
