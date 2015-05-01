@@ -93,9 +93,6 @@
     <property name="Accuracy" type="freetext">
       <description/>
     </property>
-    <property name="Heading" type="freetext">
-      <description/>
-    </property>
     <property name="Elevation_Absolute" type="freetext">
       <description>Elevation based on handheld GPS reading.</description>
     </property>

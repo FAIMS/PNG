@@ -252,7 +252,6 @@ fillInGPS() {
             setFieldValue(tabgroup + "Northing"  , result.get(2));
             setFieldValue(tabgroup + "Easting"   , result.get(3));
             setFieldValue(tabgroup + "Accuracy"  , getGPSEstimatedAccuracy());
-            setFieldValue(tabgroup + "Heading"   , getGPSHeading());
         }
     });
 }
@@ -342,7 +341,6 @@ addNavigationButtons() {
             //excludeAttributes.add("Northing");
             //excludeAttributes.add("Easting");
             //excludeAttributes.add("Accuracy");
-            //excludeAttributes.add("Heading");
 
             //saveCallback = new SaveCallback() {
                 //onSave(newRecord) {
@@ -583,7 +581,6 @@ updateGPSStatus() {
             status += "\nNorthing: " + projPosition.getLatitude();
             status += "   Easting: " + projPosition.getLongitude();
             status += "\nAccuracy: " + getGPSEstimatedAccuracy();
-            status += "\n Heading: " + getGPSHeading();
         } else {
             status += "\nPosition: no GPS position could be found";
         }
