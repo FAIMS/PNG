@@ -99,7 +99,7 @@
     <property name="Elevation_Absolute" type="freetext">
       <description>Elevation based on handheld GPS reading.</description>
     </property>
-    <property name="Elevation_Range" type="freetext">
+    <property name="Elevation_Range" type="vocab">
       <description>If you do not have an absolute MASL reading, please select a suitable range from a Topo map.</description>
       <lookup>
         <term> {1000_1100}
