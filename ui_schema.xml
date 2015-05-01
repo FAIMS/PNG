@@ -103,7 +103,7 @@
                   <Accuracy/>
                 </Col_Group_51>
                 <Col_Group_52>
-                  <Heading/>
+                  <!--<Heading/>-->
                 </Col_Group_52>
               </Col_Group_5>
               <Elevation_Absolute/>
@@ -363,9 +363,9 @@
           </group>
           <group ref="Col_Group_52" faims_style="even">
             <label></label>
-            <input ref="Heading" faims_attribute_name="Heading" faims_attribute_type="measure" faims_certainty="true" faims_annotation="true" faims_read_only="true">
-              <label>{Heading}</label>
-            </input>
+            <!--<input ref="Heading" faims_attribute_name="Heading" faims_attribute_type="measure" faims_certainty="true" faims_annotation="true" faims_read_only="true">-->
+              <!--<label>{Heading}</label>-->
+            <!--</input>-->
           </group>
         </group>
         <input ref="Elevation_Absolute" faims_attribute_name="Elevation_Absolute" faims_attribute_type="measure" faims_certainty="true" faims_annotation="true">
