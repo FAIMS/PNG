@@ -371,7 +371,7 @@
         <input ref="Elevation_Absolute" faims_attribute_name="Elevation_Absolute" faims_attribute_type="measure" faims_certainty="true" faims_annotation="true">
           <label>{Elevation_Absolute}</label>
         </input>
-        <input ref="Elevation_Range" faims_attribute_name="Elevation_Range" faims_attribute_type="measure" faims_certainty="true" faims_annotation="true">
+        <input ref="Elevation_Range" faims_attribute_name="Elevation_Range" faims_attribute_type="vocab" faims_certainty="true" faims_annotation="true">
           <label>{Elevation_Range}</label>
         </input>
         <select1 ref="Landscape" faims_attribute_name="Landscape" faims_attribute_type="vocab" faims_certainty="true" faims_annotation="true">
