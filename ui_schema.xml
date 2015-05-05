@@ -508,7 +508,7 @@
           </item>
         </select1>
       </group>
-      <group ref="Photolog">
+      <group ref="Photolog" faims_scrollable="false">
         <label>{Photolog}</label>
         <trigger ref="Record_External_Photo" faims_attribute_name="Record_External_Photo" faims_style_class="faims-blue">
           <label>{Record_External_Photo}</label>
@@ -536,7 +536,7 @@
           <label>{Photo_Note}</label>
         </input>
         <trigger ref="Photo_Back" faims_style_class="faims-blue">
-          <label>{Back}</label>
+          <label>{Save_And_Return}</label>
         </trigger>
       </group>
     </group>
