@@ -111,6 +111,48 @@
         <term> {1300_1400}
           <description/>
         </term>
+        <term> {1400_1500}
+          <description/>
+        </term>
+        <term> {1500_1600}
+          <description/>
+        </term>
+        <term> {1600_1700}
+          <description/>
+        </term>
+        <term> {1700_1800}
+          <description/>
+        </term>
+        <term> {1800_1900}
+          <description/>
+        </term>
+        <term> {1900_2000}
+          <description/>
+        </term>
+        <term> {2000_2100}
+          <description/>
+        </term>
+        <term> {2100_2200}
+          <description/>
+        </term>
+        <term> {2200_2300}
+          <description/>
+        </term>
+        <term> {2300_2400}
+          <description/>
+        </term>
+        <term> {2400_2500}
+          <description/>
+        </term>
+        <term> {2500_2600}
+          <description/>
+        </term>
+        <term> {2600_2700}
+          <description/>
+        </term>
+        <term> {2700_2800}
+          <description/>
+        </term>
       </lookup>
     </property>
     <property name="Landscape" type="enum">
