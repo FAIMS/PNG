@@ -447,6 +447,7 @@ loadSite() {
     entityId = getListItemValue();
     showTabGroup("Site", entityId, new FetchCallback() {
         onFetch(result) {
+            /*
             siteCode   = getFieldValue("Site/Site_Recording/Site_Code");
             siteNumber = getFieldValue("Site/Site_Recording/Site_Number");
             team       = getFieldValue("Site/Site_Recording/Team");
@@ -456,6 +457,7 @@ loadSite() {
             setFieldValue("Project/Main/Team_Members" , team);
 
             saveSiteStartingId(Integer.toString(Integer.parseInt(siteNumber) + 1));
+            */
         }
     });
 }
