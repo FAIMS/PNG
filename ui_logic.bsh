@@ -136,7 +136,7 @@ createNewSite() {
         showWarning("{Warning}", "{Err_Site_Number}");
         return;
     }
-    if (siteCode.length() != 3) {
+    if (isNull(siteCode)) {
         showWarning("{Warning}", "{Err_Site_Code}");
         return;
     }
@@ -163,12 +163,31 @@ initNewSite() {
     setTimestamp( "Site/Site_Recording/Created_At");
    
     //take autonumbering from csiro, make sure to support localsettings preservation of ID. 
+    saveSiteCode(siteCode);
     saveSiteStartingId(Integer.toString(Integer.parseInt(siteNumber) + 1));
+    saveSiteTeamMembers(team);
 }
+
+fieldName = "Project/Main/Site_Number";
+onFocus(fieldName, "", "saveSiteStartingId(getFieldValue(\"" + fieldName + "\"));");
+fieldName = "Project/Main/Team_Members";
+onFocus(fieldName, "", "saveSiteTeamMembers(getFieldValue(\"" + fieldName + "\"));");
+fieldName = "Project/Main/Site_Code";
+onFocus(fieldName, "", "saveSiteCode(getFieldValue(\"" + fieldName + "\"));");
 
 saveSiteStartingId(String siteStartingID) {
     setFieldValue("Project/Main/Site_Number", siteStartingID);
     fetchOne("REPLACE INTO localSettings(key, value) VALUES('Site_Number', '" + siteStartingID + "');", null);
+}
+
+saveSiteTeamMembers(String teamMembers) {
+    setFieldValue("Project/Main/Team_Members", teamMembers);
+    fetchOne("REPLACE INTO localSettings(key, value) VALUES('Team_Members', '" + teamMembers + "');", null);
+}
+
+saveSiteCode(String code) {
+    setFieldValue("Project/Main/Site_Code", code);
+    fetchOne("REPLACE INTO localSettings(key, value) VALUES('Site_Code', '" + code + "');", null);
 }
 
 /* Loads the sample starting ID if one exists, otherwise defaults to '1'. */
@@ -188,9 +207,26 @@ loadSiteStartingID() {
     });
 }
 
+loadFromLocalSettings(String key, String defaultVal) {
+    query = "SELECT value FROM localSettings WHERE key = '" + key + "';";
+    fetchOne(query, new FetchCallback() {
+        onFetch(result) {
+            print("" + result);
+            String value = defaultVal;
+            if (!isNull(result)) {
+                value = result.get(0);
+            }
+
+            setFieldValue("Project/Main/" + key, value);
+        }
+    });
+}
+
 populateMain() {
     setFieldValue("Project/Main/Author", username);
     loadSiteStartingID(); //take autonumbering from csiro, make sure to support localsettings preservation of ID. 
+    loadFromLocalSettings("Team_Members" , "");
+    loadFromLocalSettings("Site_Code"    , "");
     updateGPSStatus();
 }
 

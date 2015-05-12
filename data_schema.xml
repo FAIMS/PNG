@@ -21,39 +21,74 @@
     </property>
     <property name="Site_Number" type="freetext" isIdentifier="true">
       <description>This is Site number, which is auto-incremented by 1 by FAIMS system upon record creation.</description>
-      <formatString><![CDATA[$2]]></formatString>
+      <formatString><![CDATA[$2 - ]]></formatString>
     </property>
     <property name="Created_At" type="freetext">
       <description>Timestamp is useful for correlating captured digital data with written notes after the fieldwork. Automatic input</description>
     </property>
-    <property name="Author" type="freetext">
-      <description/>
-    </property>
-    <property name="Team" type="freetext">
-      <description/>
-    </property>
-    <property name="Local_Site_Name" type="freetext">
-      <description>Site name in local language, Tok Pisin, and/or English.</description>
-    </property>
-    <property name="Site_Type" type="enum">
+    <property name="Site_Type" type="enum" isIdentifier="true">
       <description>Basic category for type of site.</description>
+      <formatString><![CDATA[$1 - ]]></formatString>
       <lookup>
-        <term> {Ethnographic}
+        <term> {Ethnographic_Site}
           <description/>
         </term>
-        <term> {Surface_Scatter}
+        <term> {Oral_Site}
+          <description/>
+        </term>
+        <term> {Ancestral_Site}
+          <description/>
+        </term>
+        <term> {Isolated_artefact}
+          <description/>
+        </term>
+        <term> {Isolated_feature}
           <description/>
         </term>
         <term> {Rockshelter}
           <description/>
         </term>
-        <term> {Isolated_Feature_Artefact}
+        <term> {Cave}
+          <description/>
+        </term>
+        <term> {Artefact_Scatter}
+          <description/>
+        </term>
+        <term> {Sub-surface_cultural_deposit}
+          <description/>
+        </term>
+        <term> {Midden}
+          <description/>
+        </term>
+        <term> {Stone_arrangement_megalithic_structures}
+          <description/>
+        </term>
+        <term> {Quarry}
+          <description/>
+        </term>
+        <term> {Rockart}
+          <description/>
+        </term>
+        <term> {Skeletal_Deposit}
+          <description/>
+        </term>
+        <term> {Terraces_land_modifications}
           <description/>
         </term>
         <term> {Other}
           <description/>
         </term>
       </lookup>
+    </property>
+  <property name="Author" type="freetext" isIdentifier="true">
+      <description/>
+      <formatString><![CDATA[$2]]></formatString>
+    </property>
+    <property name="Team" type="freetext">
+      <description/>
+    </property>
+    <property name="Local_Site_Name" type="freetext">
+      <description>Site name in local language, Tok Pisin, and/or English.</description>
     </property>
     <property name="Site_Significance" type="enum">
       <description>Denote the site's potential for excavation - potential for addressing our research objectives.</description>
@@ -99,6 +134,9 @@
     <property name="Elevation_Range" type="enum">
       <description>If you do not have an absolute MASL reading, please select a suitable range from a Topo map.</description>
       <lookup>
+        <term> {lessThan_1000}
+          <description/>
+        </term>
         <term> {1000_1100}
           <description/>
         </term>
@@ -196,6 +234,9 @@
         <term> {Scrub_Undergrowth}
           <description/>
         </term>
+        <term> {Other}
+          <description/>
+        </term>
       </lookup>
     </property>
     <property name="Ground_Visibility" type="enum">
@@ -227,7 +268,7 @@
         <term> {Path}
           <description/>
         </term>
-        <term> {Villiage}
+        <term> {Village}
           <description/>
         </term>
         <term> {Plantation}
@@ -261,9 +302,6 @@
         </term>
       </lookup>
     </property>
-    <property name="Estimated_Dimensions" type="freetext">
-      <description>Rough estimate of site area.</description>
-    </property>
     <property name="Cultural_Material_Present" type="enum">
       <description/>
       <lookup>
@@ -285,13 +323,16 @@
         <term> {Animal_Bone}
           <description/>
         </term>
+        <term> {Human_Bone}
+          <description/>
+        </term>
         <term> {Wood}
           <description/>
         </term>
         <term> {Mumu_Stones}
           <description/>
         </term>
-        <term> {Etc}
+        <term> {Other}
           <description/>
         </term>
       </lookup>
@@ -379,30 +420,34 @@
           <term> {Ethnographic_Site} {Length}  <description/> </term>
           <term> {Ethnographic_Site} {Width}   <description/> </term>
           <term> {Ethnographic_Site} {Area}    <description/> </term>
+          <term> {Ethnographic_Site} {Other}   <description/> </term>
         </term>
         <term> {Oral_Site}
           <description/>
           <term> {Oral_Site} {Length}  <description/> </term>
           <term> {Oral_Site} {Width}   <description/> </term>
           <term> {Oral_Site} {Area}    <description/> </term>
+          <term> {Oral_Site} {Other}   <description/> </term>
         </term>
         <term> {Ancestral_Site}
           <description/>
           <term> {Ancestral_Site} {Length}  <description/> </term>
           <term> {Ancestral_Site} {Width}   <description/> </term>
           <term> {Ancestral_Site} {Area}    <description/> </term>
+          <term> {Ancestral_Site} {Other}   <description/> </term>
         </term>
         <term> {Isolated_artefact}
           <description/>
-          <term> {Isolated_artefact} {N_A}
-            <description/>
-          </term>
+          <term> {Isolated_artefact} {Length}  <description/> </term>
+          <term> {Isolated_artefact} {Width}   <description/> </term>
+          <term> {Isolated_artefact} {Other}   <description/> </term>
         </term>
         <term> {Isolated_feature}
           <description/>
           <term> {Isolated_feature} {Length}  <description/> </term>
           <term> {Isolated_feature} {Width}   <description/> </term>
           <term> {Isolated_feature} {Height}  <description/> </term>
+          <term> {Isolated_feature} {Other}   <description/> </term>
         </term>
         <term> {Rockshelter}
           <description/>
@@ -416,6 +461,7 @@
           <term> {Rockshelter} {Aspect}           <description> The direction that the opening of the cave/rockshelter is facing </description> </term>
           <term> {Rockshelter} {Area_of_Floor}    <description> Estimate - maximum extent of usable cave/rockshelter, including where there is rockfall (as it may not have been there in the past) </description> </term>
           <term> {Rockshelter} {Area_of_Deposit}  <description> Estimate - maximum extent of sediment in cave/rockshelter, including where there is rockfall (as it may not have been there in the past) </description> </term>
+          <term> {Rockshelter} {Other}  <description/> </term>
         </term>
         <term> {Cave}
           <description/>
@@ -429,6 +475,7 @@
           <term> {Cave} {Aspect}           <description> The direction that the opening of the cave/rockshelter is facing </description> </term>
           <term> {Cave} {Area_of_Floor}    <description> Estimate - maximum extent of usable cave/rockshelter, including where there is rockfall (as it may not have been there in the past) </description> </term>
           <term> {Cave} {Area_of_Deposit}  <description> Estimate - maximum extent of sediment in cave/rockshelter, including where there is rockfall (as it may not have been there in the past) </description> </term>
+          <term> {Cave} {Other}  <description/> </term>
         </term>
 
         <term> {Artefact_scatter}
@@ -438,6 +485,7 @@
           <term> {Artefact_scatter} {Length_of_Densest_Scatter_Area}                        <description/> </term>
           <term> {Artefact_scatter} {Width_of_Densest_Scatter_Area}                         <description/> </term>
           <term> {Artefact_scatter} {Estimated_Average_Density_Artefacts_per_Square_Metre}  <description/> </term>
+          <term> {Artefact_scatter} {Other}  <description/> </term>
         </term>
 
         <term> {Sub-surface_cultural_deposit}
@@ -446,18 +494,22 @@
           <term> {Sub-surface_cultural_deposit} {Depth_of_Each_Layer}                     <description/> </term>
           <term> {Sub-surface_cultural_deposit} {Estimated_Length_of_Subsurface_Deposit}  <description/> </term>
           <term> {Sub-surface_cultural_deposit} {Estimated_Width_of_Subsurface_Deposit}   <description/> </term>
+          <term> {Sub-surface_cultural_deposit} {Other}                                   <description/> </term>
         </term>
 
         <term> {Midden}
           <description/>
-          <term> {Midden} {Length_of_Midden}  <description/> </term>
-          <term> {Midden} {Width_of_Midden}   <description/> </term>
+          <term> {Midden} {Length}  <description/> </term>
+          <term> {Midden} {Width}   <description/> </term>
+          <term> {Midden} {Other}   <description/> </term>
         </term>
 
         <term> {Stone_arrangement_megalithic_structures}
           <description/>
-          <term> {Stone_arrangement_megalithic_structures} {Length_and_Direction_Degrees_of_Structure}  <description/> </term>
-          <term> {Stone_arrangement_megalithic_structures} {Width_and_Direction_Degrees_of_Structure}   <description/> </term>
+          <term> {Stone_arrangement_megalithic_structures} {Length}  <description/> </term>
+          <term> {Stone_arrangement_megalithic_structures} {Width}   <description/> </term>
+          <term> {Stone_arrangement_megalithic_structures} {Direction_Degrees_Of_Structure}   <description/> </term>
+          <term> {Stone_arrangement_megalithic_structures} {Other}   <description/> </term>
         </term>
 
         <term> {Quarry}
@@ -465,6 +517,7 @@
           <term> {Quarry} {Length}  <description/> </term>
           <term> {Quarry} {Width}   <description/> </term>
           <term> {Quarry} {Height}  <description/> </term>
+          <term> {Quarry} {Other}   <description/> </term>
         </term>
 
         <term> {Rockart}
@@ -473,23 +526,27 @@
           <term> {Rockart} {Number_of_Motifs}      <description/> </term>
           <term> {Rockart} {Length_of_Each_Panel}  <description/> </term>
           <term> {Rockart} {Width_of_Each_Panel}   <description/> </term>
+          <term> {Rockart} {Other}                 <description/> </term>
         </term>
 
         <term> {Skeletal_deposit}
           <description/>
-          <term> {Skeletal_deposit} {N_A}  <description/> </term>
+          <term> {Skeletal_deposit} {Other}  <description/> </term>
         </term>
 
         <term> {Terraces_land_modifications}
           <description/>
-          <term> {Terraces_land_modifications} {Length_and_Direction_Degrees_of_Terrace}  <description/> </term>
-          <term> {Terraces_land_modifications} {Width_and_Direction_Degrees_of_Terrace}   <description/> </term>
+          <term> {Terraces_land_modifications} {Length}  <description/> </term>
+          <term> {Terraces_land_modifications} {Width}   <description/> </term>
+          <term> {Terraces_land_modifications} {Direction_Degrees_Of_Terrace}   <description/> </term>
+          <term> {Terraces_land_modifications} {Other}   <description/> </term>
         </term>
 
         <term> {Other}
           <description/>
           <term> {Other} {Length}  <description/> </term>
           <term> {Other} {Width}   <description/> </term>
+          <term> {Other} {Other}   <description/> </term>
         </term>
       </lookup>
     </property>
