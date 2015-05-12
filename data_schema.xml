@@ -96,9 +96,6 @@
     <property name="Site_Significance" type="enum">
       <description>Denote the site's potential for excavation - potential for addressing our research objectives.</description>
       <lookup>
-        <term> {Not_Observed}
-          <description/>
-        </term>
         <term> {None}
           <description/>
         </term>
@@ -338,9 +335,6 @@
     <property name="Cultural_Material_Present" type="enum">
       <description/>
       <lookup>
-        <term> {Not_Observed}
-          <description/>
-        </term>
         <term> {Pottery}
           <description/>
         </term>
@@ -460,9 +454,6 @@
       <description/>
       <formatString><![CDATA[$1: ]]></formatString>
       <lookup>
-        <term> {Not_Observed}
-          <description/>
-        </term>
         <term> {Ethnographic_Site}
           <description/>
           <term> {Ethnographic_Site} {Length}  <description/> </term>
