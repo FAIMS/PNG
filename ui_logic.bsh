@@ -50,23 +50,23 @@ login() {
 
 addActionBarItem("sync", new ToggleActionButtonCallback() {
     actionOnLabel() {
-        "{Sync_Enabled}";
+        "{Disable_Sync}";
     }
     actionOn() {
         setSyncEnabled(false);
         setFileSyncEnabled(false);
-        showToast("{Sync_Disabled}");
+        showToast("{Sync_Enabled}");
     }
     isActionOff() {
         isSyncEnabled();
     }
     actionOffLabel() {
-        "{Sync_Disabled}";
+        "{Enable_Sync}";
     }
     actionOff() {
         setSyncEnabled(true);
         setFileSyncEnabled(true);
-        showToast("{Sync_Enabled}");
+        showToast("{Sync_Disabled}");
     }
 });
 
@@ -936,8 +936,8 @@ makeVocab(String type, String path, String attrib){
 /******************************************************************************/
 
 startInternalGPS();
-setSyncEnabled(true);
-setFileSyncEnabled(true);
+// setSyncEnabled(true);
+// setFileSyncEnabled(true);
 
 // These should go in functions so we can see what's populating what.
 makeVocab("CheckBoxGroup" , "Site/Site_Recording/Cultural_Material_Present" , "Cultural_Material_Present");
