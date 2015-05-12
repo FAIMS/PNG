@@ -30,6 +30,9 @@
       <description>Basic category for type of site.</description>
       <formatString><![CDATA[$1 - ]]></formatString>
       <lookup>
+        <term> {Not_Observed}
+          <description/>
+        </term>
         <term> {Ethnographic_Site}
           <description/>
         </term>
@@ -93,6 +96,9 @@
     <property name="Site_Significance" type="enum">
       <description>Denote the site's potential for excavation - potential for addressing our research objectives.</description>
       <lookup>
+        <term> {Not_Observed}
+          <description/>
+        </term>
         <term> {None}
           <description/>
         </term>
@@ -103,6 +109,9 @@
           <description/>
         </term>
         <term> {High}
+          <description/>
+        </term>
+        <term> {Other}
           <description/>
         </term>
       </lookup>
@@ -134,6 +143,9 @@
     <property name="Elevation_Range" type="enum">
       <description>If you do not have an absolute MASL reading, please select a suitable range from a Topo map.</description>
       <lookup>
+        <term> {Not_Observed}
+          <description/>
+        </term>
         <term> {lessThan_1000}
           <description/>
         </term>
@@ -191,11 +203,17 @@
         <term> {2700_2800}
           <description/>
         </term>
+        <term> {Other}
+          <description/>
+        </term>
       </lookup>
     </property>
     <property name="Landscape" type="enum">
       <description/>
       <lookup>
+        <term> {Not_Observed}
+          <description/>
+        </term>
         <term> {Hiltop}
           <description/>
         </term>
@@ -219,6 +237,9 @@
     <property name="Vegetation" type="enum">
       <description/>
       <lookup>
+        <term> {Not_Observed}
+          <description/>
+        </term>
         <term> {Primary_Forest}
           <description/>
         </term>
@@ -242,6 +263,9 @@
     <property name="Ground_Visibility" type="enum">
       <description/>
       <lookup>
+        <term> {Not_Observed}
+          <description/>
+        </term>
         <term> {0}
           <description/>
         </term>
@@ -257,11 +281,17 @@
         <term> {75_100}
           <description/>
         </term>
+        <term> {Other}
+          <description/>
+        </term>
       </lookup>
     </property>
     <property name="Current_Land_Use" type="enum">
       <description/>
       <lookup>
+        <term> {Not_Observed}
+          <description/>
+        </term>
         <term> {Garden}
           <description/>
         </term>
@@ -285,6 +315,9 @@
     <property name="Sampling_Method" type="enum">
       <description/>
       <lookup>
+        <term> {Not_Observed}
+          <description/>
+        </term>
         <term> {Observational}
           <description/>
         </term>
@@ -305,6 +338,9 @@
     <property name="Cultural_Material_Present" type="enum">
       <description/>
       <lookup>
+        <term> {Not_Observed}
+          <description/>
+        </term>
         <term> {Pottery}
           <description/>
         </term>
@@ -340,6 +376,9 @@
     <property name="Surface_Geomorphology" type="enum">
       <description/>
       <lookup>
+        <term> {Not_Observed}
+          <description/>
+        </term>
         <term> {Alluvium}
           <description/>
         </term>
@@ -366,6 +405,9 @@
     <property name="Disturbance" type="enum">
       <description>Please gauge significance of the site. Garden activity, animal burrowing, natural erosion etc may have destroyed sub-surface cultural deposit.</description>/
       <lookup>
+        <term> {Not_Observed}
+          <description/>
+        </term>
         <term> {Undisturbed}
           <description/>
         </term>
@@ -376,6 +418,9 @@
           <description/>
         </term>
         <term> {Unknown}
+          <description/>
+        </term>
+        <term> {Other}
           <description/>
         </term>
       </lookup>
@@ -415,6 +460,9 @@
       <description/>
       <formatString><![CDATA[$1: ]]></formatString>
       <lookup>
+        <term> {Not_Observed}
+          <description/>
+        </term>
         <term> {Ethnographic_Site}
           <description/>
           <term> {Ethnographic_Site} {Length}  <description/> </term>
