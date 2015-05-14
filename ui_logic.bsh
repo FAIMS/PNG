@@ -810,8 +810,8 @@ dataEntryLayerID = null;
 initMap() {
     // Base map layer
     mapPath = "Project/Map/map";
-    setMapZoom(mapPath, 13.0f);
-    showBaseMap(mapPath, "base map", "files/data/maps/Simabi-Kaironk_11km_N-S_18km_E-W geotiff.tif");
+    setMapZoom(mapPath, 14.0f);
+    showBaseMap(mapPath, "base map", "files/data/maps/SimbaiKaironk32755.tif");
 
     ps  = createPointStyle(10, Color.BLUE, 0.2f, 0.5f);
     ls  = createLineStyle(10, Color.GREEN, 0.05f, 0.3f, null);
