@@ -201,7 +201,7 @@
     </group>
     <group ref="Project">
       <label>{Project}</label>
-      <group ref="Main">
+      <group ref="Main" faims_scrollable="false">
         <label>{Main}</label>
         <input ref="Team_Members">
           <label>{Team_Members}</label>

@@ -247,10 +247,10 @@ fillInGPS() {
     fetchOne(query, new FetchCallback() {
         onFetch(result) {
             print("[fillInGPS()] Fetched DB transformed geometry: " + result);
-            setFieldValue(tabgroup + "Latitude"  , result.get(0));
-            setFieldValue(tabgroup + "Longitude" , result.get(1));
-            setFieldValue(tabgroup + "Northing"  , result.get(2));
-            setFieldValue(tabgroup + "Easting"   , result.get(3));
+            setFieldValue(tabgroup + "Longitude" , result.get(0));
+            setFieldValue(tabgroup + "Latitude"  , result.get(1));
+            setFieldValue(tabgroup + "Easting"   , result.get(2));
+            setFieldValue(tabgroup + "Northing"  , result.get(3));
             setFieldValue(tabgroup + "Accuracy"  , getGPSEstimatedAccuracy());
         }
     });
